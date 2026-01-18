@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class TopicDetailScreen extends StatefulWidget {
-  final int themeId;
+  final int situationId;
   final int topicId;
 
-  const TopicDetailScreen({super.key, required this.themeId, required this.topicId});
+  const TopicDetailScreen({super.key, required this.situationId, required this.topicId});
 
   @override
   State<TopicDetailScreen> createState() => _TopicDetailScreenState();
@@ -25,7 +25,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
 
   Future<void> _loadTopic() async {
     try {
-      final topic = await _apiService.getTopic(widget.themeId, widget.topicId);
+      final topic = await _apiService.getTopic(widget.situationId, widget.topicId);
       setState(() {
         _topic = topic;
         _isLoading = false;
@@ -78,14 +78,14 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
               if (questionController.text.isNotEmpty) {
                 if (question == null) {
                   await _apiService.createQuestion(
-                    widget.themeId,
+                    widget.situationId,
                     widget.topicId,
                     questionController.text,
                     answerController.text,
                   );
                 } else {
                   await _apiService.updateQuestion(
-                    widget.themeId,
+                    widget.situationId,
                     widget.topicId,
                     question['id'],
                     questionController.text,
@@ -125,13 +125,14 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
     );
 
     if (confirmed == true) {
-      await _apiService.deleteQuestion(widget.themeId, widget.topicId, questionId);
+      await _apiService.deleteQuestion(widget.situationId, widget.topicId, questionId);
       _loadTopic();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text('トピック詳細'),
@@ -391,7 +392,12 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                         Expanded(
                                                           child: Text(
                                                             question['answer'] ?? '（未回答）',
-                                                            style: const TextStyle(height: 1.5),
+                                                            style: TextStyle(
+                                                              height: 1.5,
+                                                              color: isDark
+                                                                  ? Colors.grey.shade900
+                                                                  : Colors.black87,
+                                                            ),
                                                           ),
                                                         ),
                                                       ],

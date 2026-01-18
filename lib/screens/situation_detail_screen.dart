@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'topic_detail_screen.dart';
 
-class ThemeDetailScreen extends StatefulWidget {
-  final int themeId;
+class SituationDetailScreen extends StatefulWidget {
+  final int situationId;
 
-  const ThemeDetailScreen({super.key, required this.themeId});
+  const SituationDetailScreen({super.key, required this.situationId});
 
   @override
-  State<ThemeDetailScreen> createState() => _ThemeDetailScreenState();
+  State<SituationDetailScreen> createState() => _SituationDetailScreenState();
 }
 
-class _ThemeDetailScreenState extends State<ThemeDetailScreen> {
+class _SituationDetailScreenState extends State<SituationDetailScreen> {
   final _apiService = ApiService();
-  Map<String, dynamic>? _theme;
+  Map<String, dynamic>? _situation;
   List<dynamic> _topics = [];
   List<dynamic> _questions = [];
   bool _isLoading = true;
@@ -21,16 +21,16 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTheme();
+    _loadSituation();
   }
 
-  Future<void> _loadTheme() async {
+  Future<void> _loadSituation() async {
     try {
-      final theme = await _apiService.getTheme(widget.themeId);
+      final situation = await _apiService.getSituation(widget.situationId);
       setState(() {
-        _theme = theme;
-        _topics = List<dynamic>.from(theme['topics'] ?? []);
-        _questions = List<dynamic>.from(theme['questions'] ?? []);
+        _situation = situation;
+        _topics = List<dynamic>.from(situation['topics'] ?? []);
+        _questions = List<dynamic>.from(situation['questions'] ?? []);
         _isLoading = false;
       });
     } catch (e) {
@@ -81,13 +81,13 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen> {
             onPressed: () async {
               if (titleController.text.isNotEmpty) {
                 await _apiService.createTopic(
-                  widget.themeId,
+                  widget.situationId,
                   titleController.text,
                   descController.text,
                 );
                 if (!context.mounted) return;
                 Navigator.pop(context);
-                _loadTheme();
+                _loadSituation();
               }
             },
             child: const Text('作成'),
@@ -101,14 +101,14 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_theme?['title'] ?? 'テーマ詳細'),
+        title: Text(_situation?['title'] ?? 'シチュエーション詳細'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _theme == null
-              ? const Center(child: Text('テーマが見つかりません'))
+          : _situation == null
+              ? const Center(child: Text('シチュエーションが見つかりません'))
               : RefreshIndicator(
-                  onRefresh: _loadTheme,
+                  onRefresh: _loadSituation,
                   child: _topics.isEmpty
                       ? ListView(
                           children: [
@@ -179,11 +179,11 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => TopicDetailScreen(
-                                        themeId: widget.themeId,
+                                        situationId: widget.situationId,
                                         topicId: topic['id'],
                                       ),
                                     ),
-                                  ).then((_) => _loadTheme());
+                                  ).then((_) => _loadSituation());
                                 },
                               ),
                             );

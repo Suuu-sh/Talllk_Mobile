@@ -56,55 +56,71 @@ class ApiService {
     throw Exception(_formatError(response, 'Login failed'));
   }
 
-  // Themes
-  Future<List<dynamic>> getThemes() async {
+  // Situations
+  Future<List<dynamic>> getSituations() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/themes'),
+      Uri.parse('$baseUrl/situations'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }
-    throw Exception(_formatError(response, 'Failed to load themes'));
+    throw Exception(_formatError(response, 'Failed to load situations'));
   }
 
-  Future<Map<String, dynamic>> getTheme(int id) async {
+  Future<Map<String, dynamic>> getSituation(int id) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/themes/$id'),
+      Uri.parse('$baseUrl/situations/$id'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }
-    throw Exception(_formatError(response, 'Failed to load theme'));
+    throw Exception(_formatError(response, 'Failed to load situation'));
   }
 
-  Future<Map<String, dynamic>> createTheme(String title, String description) async {
+  Future<Map<String, dynamic>> createSituation(String title, String description) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/themes'),
+      Uri.parse('$baseUrl/situations'),
       headers: await _getHeaders(),
       body: jsonEncode({'title': title, 'description': description}),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     }
-    throw Exception(_formatError(response, 'Failed to create theme'));
+    throw Exception(_formatError(response, 'Failed to create situation'));
   }
 
-  Future<void> deleteTheme(int id) async {
+  Future<void> deleteSituation(int id) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/themes/$id'),
+      Uri.parse('$baseUrl/situations/$id'),
       headers: await _getHeaders(),
     );
     if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception(_formatError(response, 'Failed to delete theme'));
+      throw Exception(_formatError(response, 'Failed to delete situation'));
     }
   }
 
+  Future<Map<String, dynamic>> updateSituation(
+    int id,
+    String title,
+    String description,
+  ) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/situations/$id'),
+      headers: await _getHeaders(),
+      body: jsonEncode({'title': title, 'description': description}),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to update situation'));
+  }
+
   // Topics
-  Future<List<dynamic>> getTopics(int themeId) async {
+  Future<List<dynamic>> getTopics(int situationId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/themes/$themeId/topics'),
+      Uri.parse('$baseUrl/situations/$situationId/topics'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
@@ -113,9 +129,9 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to load topics'));
   }
 
-  Future<Map<String, dynamic>> getTopic(int themeId, int topicId) async {
+  Future<Map<String, dynamic>> getTopic(int situationId, int topicId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId'),
+      Uri.parse('$baseUrl/situations/$situationId/topics/$topicId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
@@ -124,9 +140,9 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to load topic'));
   }
 
-  Future<Map<String, dynamic>> createTopic(int themeId, String title, String description) async {
+  Future<Map<String, dynamic>> createTopic(int situationId, String title, String description) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/themes/$themeId/topics'),
+      Uri.parse('$baseUrl/situations/$situationId/topics'),
       headers: await _getHeaders(),
       body: jsonEncode({'title': title, 'description': description}),
     );
@@ -136,9 +152,9 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to create topic'));
   }
 
-  Future<void> deleteTopic(int themeId, int topicId) async {
+  Future<void> deleteTopic(int situationId, int topicId) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId'),
+      Uri.parse('$baseUrl/situations/$situationId/topics/$topicId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode != 200 && response.statusCode != 204) {
@@ -148,13 +164,13 @@ class ApiService {
 
   // Questions
   Future<Map<String, dynamic>> createQuestion(
-    int themeId,
+    int situationId,
     int topicId,
     String question,
     String answer,
   ) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId/questions'),
+      Uri.parse('$baseUrl/situations/$situationId/topics/$topicId/questions'),
       headers: await _getHeaders(),
       body: jsonEncode({'question': question, 'answer': answer}),
     );
@@ -165,14 +181,14 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> updateQuestion(
-    int themeId,
+    int situationId,
     int topicId,
     int questionId,
     String question,
     String answer,
   ) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId/questions/$questionId'),
+      Uri.parse('$baseUrl/situations/$situationId/topics/$topicId/questions/$questionId'),
       headers: await _getHeaders(),
       body: jsonEncode({'question': question, 'answer': answer}),
     );
@@ -182,9 +198,9 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to update question'));
   }
 
-  Future<void> deleteQuestion(int themeId, int topicId, int questionId) async {
+  Future<void> deleteQuestion(int situationId, int topicId, int questionId) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId/questions/$questionId'),
+      Uri.parse('$baseUrl/situations/$situationId/topics/$topicId/questions/$questionId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode != 200 && response.statusCode != 204) {
