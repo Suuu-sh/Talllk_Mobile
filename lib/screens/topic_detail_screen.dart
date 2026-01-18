@@ -92,10 +92,9 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                     answerController.text,
                   );
                 }
-                if (mounted) {
-                  Navigator.pop(context);
-                  _loadTopic();
-                }
+                if (!context.mounted) return;
+                Navigator.pop(context);
+                _loadTopic();
               }
             },
             child: Text(question == null ? '追加' : '更新'),

@@ -16,6 +16,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final _apiService = ApiService();
   List<dynamic> _themes = [];
   bool _isLoading = true;
+  int _selectedTabIndex = 0;
 
   @override
   void initState() {
@@ -77,10 +78,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   titleController.text,
                   descController.text,
                 );
-                if (mounted) {
-                  Navigator.pop(context);
-                  _loadThemes();
-                }
+                if (!context.mounted) return;
+                Navigator.pop(context);
+                _loadThemes();
               }
             },
             child: const Text('作成'),
@@ -126,163 +126,179 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.orange.shade500, width: 2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'Talllk',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange.shade600,
-                ),
-              ),
-            ),
-          ],
+  List<dynamic> _recentThemes() {
+    if (_themes.isEmpty) return [];
+    return _themes.take(3).toList();
+  }
+
+  Widget _buildRecentSection() {
+    final recent = _recentThemes();
+    if (recent.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '最近閲覧したページ',
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _showSettings,
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              Provider.of<AuthProvider>(context, listen: false).logout();
-              Navigator.of(context).pushReplacementNamed('/login');
-            },
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _themes.isEmpty
-              ? Center(
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 140,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: recent.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final theme = recent[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ThemeDetailScreen(themeId: theme['id']),
+                    ),
+                  ).then((_) => _loadThemes());
+                },
+                child: Container(
+                  width: 160,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardTheme.color,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: Colors.black12),
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.orange.shade100, Colors.orange.shade200],
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.chat_bubble_outline,
-                          size: 64,
-                          color: Colors.orange.shade600,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'まだテーマがありません',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text('最初のテーマを作成して、会話の準備を始めましょう'),
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        onPressed: _showCreateDialog,
-                        icon: const Icon(Icons.add),
-                        label: const Text('最初のテーマを作成'),
+                      Icon(Icons.description_outlined, color: Colors.orange.shade500),
+                      const Spacer(),
+                      Text(
+                        theme['title'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadThemes,
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemCount: _themes.length,
-                    itemBuilder: (context, index) {
-                      final theme = _themes[index];
-                      return Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ThemeDetailScreen(themeId: theme['id']),
-                              ),
-                            ).then((_) => _loadThemes());
-                          },
-                          borderRadius: BorderRadius.circular(16),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 12),
-                                Text(
-                                  theme['title'],
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 8),
-                                Expanded(
-                                  child: Text(
-                                    theme['description'] ?? '説明なし',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '詳細を見る',
-                                      style: TextStyle(
-                                        color: Colors.orange.shade600,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_forward,
-                                      size: 14,
-                                      color: Colors.orange.shade600,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                      ),
-                    );
-                  },
                 ),
-                ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateDialog,
-        child: const Icon(Icons.add),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFolderList() {
+    if (_themes.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.chat_bubble_outline,
+              size: 64,
+              color: Colors.orange.shade600,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'まだテーマがありません',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text('最初のテーマを作成して、会話の準備を始めましょう'),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _showCreateDialog,
+              icon: const Icon(Icons.add),
+              label: const Text('最初のテーマを作成'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: _themes.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        final theme = _themes[index];
+        return ListTile(
+          leading: Icon(Icons.folder_outlined, color: Colors.orange.shade600),
+          title: Text(
+            theme['title'],
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: Text(theme['description'] ?? '説明なし'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ThemeDetailScreen(themeId: theme['id']),
+              ),
+            ).then((_) => _loadThemes());
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadThemes,
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                children: [
+                  _buildRecentSection(),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'フォルダ構成',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.55,
+                    child: _buildFolderList(),
+                  ),
+                ],
+              ),
+            ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedTabIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedTabIndex = index;
+          });
+          if (index == 1) {
+            _showCreateDialog();
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'ホーム',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle_outline),
+            activeIcon: Icon(Icons.add_circle),
+            label: '作成',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.folder_outlined),
+            activeIcon: Icon(Icons.folder),
+            label: 'フォルダ',
+          ),
+        ],
       ),
     );
   }

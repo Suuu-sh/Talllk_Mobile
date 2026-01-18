@@ -85,10 +85,9 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen> {
                   titleController.text,
                   descController.text,
                 );
-                if (mounted) {
-                  Navigator.pop(context);
-                  _loadTheme();
-                }
+                if (!context.mounted) return;
+                Navigator.pop(context);
+                _loadTheme();
               }
             },
             child: const Text('作成'),

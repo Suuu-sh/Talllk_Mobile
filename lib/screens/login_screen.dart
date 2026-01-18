@@ -96,15 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Talllk',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange.shade600,
-                    ),
-                  ),
                   const SizedBox(height: 8),
                   Text(
                     '会話の準備をサポート',
