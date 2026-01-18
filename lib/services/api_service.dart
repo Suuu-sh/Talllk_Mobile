@@ -56,10 +56,55 @@ class ApiService {
     throw Exception(_formatError(response, 'Login failed'));
   }
 
-  // Topics
-  Future<List<dynamic>> getTopics() async {
+  // Themes
+  Future<List<dynamic>> getThemes() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/topics'),
+      Uri.parse('$baseUrl/themes'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to load themes'));
+  }
+
+  Future<Map<String, dynamic>> getTheme(int id) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/themes/$id'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to load theme'));
+  }
+
+  Future<Map<String, dynamic>> createTheme(String title, String description) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/themes'),
+      headers: await _getHeaders(),
+      body: jsonEncode({'title': title, 'description': description}),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to create theme'));
+  }
+
+  Future<void> deleteTheme(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/themes/$id'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception(_formatError(response, 'Failed to delete theme'));
+    }
+  }
+
+  // Topics
+  Future<List<dynamic>> getTopics(int themeId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/themes/$themeId/topics'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
@@ -68,9 +113,9 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to load topics'));
   }
 
-  Future<Map<String, dynamic>> getTopic(int id) async {
+  Future<Map<String, dynamic>> getTopic(int themeId, int topicId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/topics/$id'),
+      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
@@ -79,9 +124,9 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to load topic'));
   }
 
-  Future<Map<String, dynamic>> createTopic(String title, String description) async {
+  Future<Map<String, dynamic>> createTopic(int themeId, String title, String description) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/topics'),
+      Uri.parse('$baseUrl/themes/$themeId/topics'),
       headers: await _getHeaders(),
       body: jsonEncode({'title': title, 'description': description}),
     );
@@ -91,9 +136,9 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to create topic'));
   }
 
-  Future<void> deleteTopic(int id) async {
+  Future<void> deleteTopic(int themeId, int topicId) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/topics/$id'),
+      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode != 200 && response.statusCode != 204) {
@@ -102,9 +147,14 @@ class ApiService {
   }
 
   // Questions
-  Future<Map<String, dynamic>> createQuestion(int topicId, String question, String answer) async {
+  Future<Map<String, dynamic>> createQuestion(
+    int themeId,
+    int topicId,
+    String question,
+    String answer,
+  ) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/topics/$topicId/questions'),
+      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId/questions'),
       headers: await _getHeaders(),
       body: jsonEncode({'question': question, 'answer': answer}),
     );
@@ -114,9 +164,15 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to create question'));
   }
 
-  Future<Map<String, dynamic>> updateQuestion(int topicId, int questionId, String question, String answer) async {
+  Future<Map<String, dynamic>> updateQuestion(
+    int themeId,
+    int topicId,
+    int questionId,
+    String question,
+    String answer,
+  ) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/topics/$topicId/questions/$questionId'),
+      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId/questions/$questionId'),
       headers: await _getHeaders(),
       body: jsonEncode({'question': question, 'answer': answer}),
     );
@@ -126,9 +182,9 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to update question'));
   }
 
-  Future<void> deleteQuestion(int topicId, int questionId) async {
+  Future<void> deleteQuestion(int themeId, int topicId, int questionId) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/topics/$topicId/questions/$questionId'),
+      Uri.parse('$baseUrl/themes/$themeId/topics/$topicId/questions/$questionId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode != 200 && response.statusCode != 204) {

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
-import 'topic_detail_screen.dart';
+import 'theme_detail_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -14,20 +14,20 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final _apiService = ApiService();
-  List<dynamic> _topics = [];
+  List<dynamic> _themes = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadTopics();
+    _loadThemes();
   }
 
-  Future<void> _loadTopics() async {
+  Future<void> _loadThemes() async {
     try {
-      final topics = await _apiService.getTopics();
+      final themes = await _apiService.getThemes();
       setState(() {
-        _topics = topics;
+        _themes = themes;
         _isLoading = false;
       });
     } catch (e) {
@@ -44,7 +44,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('新しいトピック'),
+        title: const Text('新しいテーマ'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -73,13 +73,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ElevatedButton(
             onPressed: () async {
               if (titleController.text.isNotEmpty) {
-                await _apiService.createTopic(
+                await _apiService.createTheme(
                   titleController.text,
                   descController.text,
                 );
                 if (mounted) {
                   Navigator.pop(context);
-                  _loadTopics();
+                  _loadThemes();
                 }
               }
             },
@@ -164,7 +164,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _topics.isEmpty
+          : _themes.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -185,22 +185,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'まだトピックがありません',
+                        'まだテーマがありません',
                         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      const Text('最初のトピックを作成して、会話の準備を始めましょう'),
+                      const Text('最初のテーマを作成して、会話の準備を始めましょう'),
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
                         onPressed: _showCreateDialog,
                         icon: const Icon(Icons.add),
-                        label: const Text('最初のトピックを作成'),
+                        label: const Text('最初のテーマを作成'),
                       ),
                     ],
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: _loadTopics,
+                  onRefresh: _loadThemes,
                   child: GridView.builder(
                     padding: const EdgeInsets.all(16),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -209,9 +209,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       mainAxisSpacing: 16,
                       childAspectRatio: 0.85,
                     ),
-                    itemCount: _topics.length,
+                    itemCount: _themes.length,
                     itemBuilder: (context, index) {
-                      final topic = _topics[index];
+                      final theme = _themes[index];
                       return Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -222,9 +222,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TopicDetailScreen(topicId: topic['id']),
+                                builder: (context) => ThemeDetailScreen(themeId: theme['id']),
                               ),
-                            ).then((_) => _loadTopics());
+                            ).then((_) => _loadThemes());
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Padding(
@@ -234,7 +234,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               children: [
                                 const SizedBox(height: 12),
                                 Text(
-                                  topic['title'],
+                                  theme['title'],
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -245,7 +245,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 const SizedBox(height: 8),
                                 Expanded(
                                   child: Text(
-                                    topic['description'] ?? '説明なし',
+                                    theme['description'] ?? '説明なし',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey.shade600,
@@ -275,10 +275,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ],
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
+                ),
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showCreateDialog,
