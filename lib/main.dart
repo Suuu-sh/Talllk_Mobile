@@ -27,8 +27,8 @@ class TalllkApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const lightScaffold = Color(0xFFF8FAFC);
-    const darkScaffold = Color(0xFF111827);
-    const darkSurface = Color(0xFF1F2937);
+    const darkScaffold = Color(0xFF0B0B0B);
+    const darkSurface = Color(0xFF121212);
     final lightScheme = ColorScheme.fromSeed(
       seedColor: Colors.orange,
       brightness: Brightness.light,

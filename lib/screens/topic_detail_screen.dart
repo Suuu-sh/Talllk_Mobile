@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import 'dashboard_screen.dart';
+import '../widgets/app_bottom_nav.dart';
+import 'search_screen.dart';
+import 'shuffle_screen.dart';
 
 class TopicDetailScreen extends StatefulWidget {
   final int situationId;
@@ -14,6 +18,7 @@ class TopicDetailScreen extends StatefulWidget {
 class _TopicDetailScreenState extends State<TopicDetailScreen> {
   final _apiService = ApiService();
   Map<String, dynamic>? _topic;
+  List<dynamic> _childTopics = [];
   bool _isLoading = true;
   int? _expandedQuestionId;
 
@@ -26,8 +31,12 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
   Future<void> _loadTopic() async {
     try {
       final topic = await _apiService.getTopic(widget.situationId, widget.topicId);
+      final topics = await _apiService.getTopics(widget.situationId);
       setState(() {
         _topic = topic;
+        _childTopics = topics
+            .where((item) => item['parent_id'] == widget.topicId)
+            .toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -104,6 +113,105 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
     );
   }
 
+  void _showCreateTopicDialog() {
+    final titleController = TextEditingController();
+    final descController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('フォルダを作成'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                labelText: 'タイトル',
+                hintText: '例：面接、デート、商談',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descController,
+              decoration: const InputDecoration(
+                labelText: '説明（任意）',
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (titleController.text.isNotEmpty) {
+                await _apiService.createTopic(
+                  widget.situationId,
+                  titleController.text,
+                  descController.text,
+                  parentId: widget.topicId,
+                );
+                if (!context.mounted) return;
+                Navigator.pop(context);
+                _loadTopic();
+              }
+            },
+            child: const Text('作成'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCreateOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.folder_outlined),
+                title: const Text('フォルダを作成'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showCreateTopicDialog();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.help_outline),
+                title: const Text('質問を追加'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showQuestionDialog();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _deleteQuestion(int questionId) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -130,12 +238,48 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
     }
   }
 
+  void _handleBottomNavTap(int index) {
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SearchScreen()),
+      );
+      return;
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ShuffleScreen()),
+      );
+      return;
+    }
+    if (index == 0) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        (route) => false,
+      );
+      return;
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DashboardScreen(
+          initialTabIndex: index,
+          initialActionIndex: index,
+        ),
+      ),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('トピック詳細'),
+        title: Text(_topic?['title'] ?? 'トピック'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -148,65 +292,58 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primaryContainer,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _topic!['title'],
-                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _topic!['description'] ?? '説明なし',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                              const SizedBox(height: 16),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange.shade100,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '質問数: ${_topic!['questions']?.length ?? 0}',
-                                  style: TextStyle(
-                                    color: Colors.orange.shade900,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        const SizedBox(height: 12),
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    '質問と回答',
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                          fontWeight: FontWeight.bold,
+                                  if (_childTopics.isNotEmpty) ...[
+                                    const Text(
+                                      'フォルダ',
+                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ..._childTopics.map(
+                                      (child) => Card(
+                                        margin: const EdgeInsets.only(bottom: 10),
+                                        elevation: 2,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
                                         ),
-                                  ),
-                                  ElevatedButton.icon(
-                                    onPressed: () => _showQuestionDialog(),
-                                    icon: const Icon(Icons.add, size: 20),
-                                    label: const Text('追加'),
+                                        child: ListTile(
+                                          leading: const Icon(Icons.folder_outlined),
+                                          title: Text(child['title'] ?? ''),
+                                          subtitle: Text(child['description'] ?? '説明なし'),
+                                          trailing: const Icon(Icons.chevron_right),
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => TopicDetailScreen(
+                                                  situationId: widget.situationId,
+                                                  topicId: child['id'],
+                                                ),
+                                              ),
+                                            ).then((_) => _loadTopic());
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                  ],
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      ElevatedButton.icon(
+                                        onPressed: _showCreateOptions,
+                                        icon: const Icon(Icons.add, size: 20),
+                                        label: const Text('追加'),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -460,6 +597,10 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                     ),
                   ),
                 ),
+      bottomNavigationBar: AppBottomNav(
+        selectedIndex: 0,
+        onTap: _handleBottomNavTap,
+      ),
     );
   }
 }

@@ -6,9 +6,19 @@ import '../services/api_service.dart';
 import '../providers/theme_provider.dart';
 import 'situation_detail_screen.dart';
 import 'topic_detail_screen.dart';
+import 'search_screen.dart';
+import 'shuffle_screen.dart';
+import '../widgets/app_bottom_nav.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final int initialTabIndex;
+  final int? initialActionIndex;
+
+  const DashboardScreen({
+    super.key,
+    this.initialTabIndex = 0,
+    this.initialActionIndex,
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -26,8 +36,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedTabIndex = widget.initialTabIndex;
     _loadRecentSituations();
     _loadSituations();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || widget.initialActionIndex == null) return;
+      setState(() {
+        _selectedTabIndex = widget.initialActionIndex!;
+      });
+      _handleTabAction(widget.initialActionIndex!);
+    });
   }
 
   Future<void> _loadRecentSituations() async {
@@ -533,7 +551,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   width: 140,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1F2937) : Colors.white,
+                    color: isDark ? const Color(0xFF151515) : const Color(0xFFF3F4F6),
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: isDark ? Colors.white10 : Colors.black12,
@@ -599,197 +617,164 @@ class _DashboardScreenState extends State<DashboardScreen> {
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _situations.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        final situation = _situations[index];
-        return SizedBox(
-          width: double.infinity,
-          child: Slidable(
-            key: ValueKey(situation['id']),
-            endActionPane: ActionPane(
-              motion: const StretchMotion(),
-            extentRatio: 0.42,
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF151515)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white12
+              : Colors.black12,
+        ),
+        boxShadow: Theme.of(context).brightness == Brightness.dark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+      ),
+      child: Column(
+        children: List.generate(_situations.length, (index) {
+          final situation = _situations[index];
+          final isLast = index == _situations.length - 1;
+          return Column(
             children: [
-              SlidableAction(
-                onPressed: (_) {
-                  _showEditSituationDialog(situation);
-                },
-                backgroundColor: Colors.orange.shade50,
-                foregroundColor: Colors.orange.shade700,
-                icon: Icons.edit_outlined,
-                label: '編集',
-                borderRadius: BorderRadius.circular(16),
-              ),
-              SlidableAction(
-                onPressed: (_) {
-                  // TODO: toggle favorite
-                },
-                backgroundColor: Colors.orange.shade600,
-                foregroundColor: Colors.white,
-                icon: Icons.star_outline,
-                label: 'お気に入り',
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ],
-          ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  _recordRecentSituation(situation['id']);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SituationDetailScreen(situationId: situation['id']),
+              Slidable(
+                key: ValueKey(situation['id']),
+                endActionPane: ActionPane(
+                  motion: const StretchMotion(),
+                  extentRatio: 0.42,
+                  children: [
+                    SlidableAction(
+                      onPressed: (_) {
+                        _showEditSituationDialog(situation);
+                      },
+                      backgroundColor: Colors.orange.shade50,
+                      foregroundColor: Colors.orange.shade700,
+                      icon: Icons.edit_outlined,
+                      label: '編集',
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ).then((_) => _loadSituations());
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.folder_outlined, color: Colors.orange.shade600, size: 20),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          situation['title'],
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            height: 1.2,
-                          ),
+                    SlidableAction(
+                      onPressed: (_) {
+                        // TODO: toggle favorite
+                      },
+                      backgroundColor: Colors.orange.shade600,
+                      foregroundColor: Colors.white,
+                      icon: Icons.star_outline,
+                      label: 'お気に入り',
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      _recordRecentSituation(situation['id']);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SituationDetailScreen(situationId: situation['id']),
                         ),
+                      ).then((_) => _loadSituations());
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withValues(alpha: 0.18),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.folder_outlined,
+                              color: Colors.orange.shade600,
+                              size: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              situation['title'],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.chevron_right),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.chevron_right),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-        );
-      },
+              if (!isLast)
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white12
+                      : Colors.black12,
+                ),
+            ],
+          );
+        }),
+      ),
     );
   }
 
-  Widget _buildBottomNav() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final itemWidth = constraints.maxWidth / 4;
-            return Container(
-              height: 58,
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1F2937) : Colors.white,
-                borderRadius: BorderRadius.circular(26),
-                border: Border.all(
-                  color: isDark ? Colors.white12 : Colors.black12,
-                ),
-                boxShadow: isDark
-                    ? []
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-              ),
-              child: Stack(
-                children: [
-                  AnimatedPositioned(
-                    duration: const Duration(milliseconds: 260),
-                    curve: Curves.easeOut,
-                    left: itemWidth * _selectedTabIndex,
-                    top: 6,
-                    child: Container(
-                      width: itemWidth,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: isDark ? 0.2 : 0.12),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: List.generate(4, (index) {
-                      final isActive = _selectedTabIndex == index;
-                      final iconColor = isActive
-                          ? Colors.orange.shade600
-                          : (isDark ? Colors.white70 : Colors.black54);
-                      final labelColor = isActive
-                          ? Colors.orange.shade600
-                          : (isDark ? Colors.white60 : Colors.black54);
-                      return Expanded(
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
-                          onTap: () {
-                            setState(() {
-                              _selectedTabIndex = index;
-                            });
-                            if (index == 1) {
-                              _showCreateDialog();
-                            } else if (index == 2) {
-                              _showSearch();
-                            } else if (index == 3) {
-                              _showSettings();
-                            }
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                index == 0
-                                    ? (isActive ? Icons.home : Icons.home_outlined)
-                                    : index == 1
-                                        ? (isActive ? Icons.add_circle : Icons.add_circle_outline)
-                                        : index == 2
-                                            ? (isActive ? Icons.search : Icons.search_outlined)
-                                            : (isActive ? Icons.settings : Icons.settings_outlined),
-                                size: 22,
-                                color: iconColor,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                index == 0
-                                    ? 'ホーム'
-                                    : index == 1
-                                        ? '作成'
-                                        : index == 2
-                                            ? '検索'
-                                            : '設定',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: labelColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
+  void _handleTabAction(int index) {
+    if (index == 1) {
+      _showCreateDialog();
+    } else if (index == 4) {
+      _showSettings();
+    }
+  }
+
+  Future<void> _handleTabTap(int index) async {
+    setState(() {
+      _selectedTabIndex = index;
+    });
+    if (index == 2) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SearchScreen()),
+      );
+      if (!mounted) return;
+      setState(() {
+        _selectedTabIndex = 0;
+      });
+      return;
+    }
+    if (index == 3) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ShuffleScreen()),
+      );
+      if (!mounted) return;
+      setState(() {
+        _selectedTabIndex = 0;
+      });
+      return;
+    }
+    _handleTabAction(index);
   }
 
   @override
@@ -842,7 +827,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: AppBottomNav(
+        selectedIndex: _selectedTabIndex,
+        onTap: _handleTabTap,
+      ),
     );
   }
 }

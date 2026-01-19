@@ -140,16 +140,42 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to load topic'));
   }
 
-  Future<Map<String, dynamic>> createTopic(int situationId, String title, String description) async {
+  Future<Map<String, dynamic>> createTopic(
+    int situationId,
+    String title,
+    String description, {
+    int? parentId,
+  }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/situations/$situationId/topics'),
       headers: await _getHeaders(),
-      body: jsonEncode({'title': title, 'description': description}),
+      body: jsonEncode({
+        'title': title,
+        'description': description,
+        'parent_id': parentId,
+      }),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     }
     throw Exception(_formatError(response, 'Failed to create topic'));
+  }
+
+  Future<Map<String, dynamic>> updateTopic(
+    int situationId,
+    int topicId,
+    String title,
+    String description,
+  ) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/situations/$situationId/topics/$topicId'),
+      headers: await _getHeaders(),
+      body: jsonEncode({'title': title, 'description': description}),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to update topic'));
   }
 
   Future<void> deleteTopic(int situationId, int topicId) async {

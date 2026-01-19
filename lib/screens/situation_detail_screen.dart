@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import '../services/api_service.dart';
 import 'topic_detail_screen.dart';
+import 'dashboard_screen.dart';
+import '../widgets/app_bottom_nav.dart';
+import 'search_screen.dart';
+import 'shuffle_screen.dart';
 
 class SituationDetailScreen extends StatefulWidget {
   final int situationId;
@@ -29,7 +34,9 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
       final situation = await _apiService.getSituation(widget.situationId);
       setState(() {
         _situation = situation;
-        _topics = List<dynamic>.from(situation['topics'] ?? []);
+        _topics = List<dynamic>.from(situation['topics'] ?? [])
+            .where((topic) => topic['parent_id'] == null)
+            .toList();
         _questions = List<dynamic>.from(situation['questions'] ?? []);
         _isLoading = false;
       });
@@ -42,6 +49,87 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
 
   int _countQuestions(int topicId) {
     return _questions.where((q) => q['topic_id'] == topicId).length;
+  }
+
+  void _showCreateOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.folder_outlined),
+                title: const Text('フォルダを作成'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showCreateDialog();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.help_outline),
+                title: const Text('質問を追加'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showQuestionDialog();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleBottomNavTap(int index) {
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SearchScreen()),
+      );
+      return;
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ShuffleScreen()),
+      );
+      return;
+    }
+    if (index == 0) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        (route) => false,
+      );
+      return;
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DashboardScreen(
+          initialTabIndex: index,
+          initialActionIndex: index,
+        ),
+      ),
+      (route) => false,
+    );
   }
 
   void _showCreateDialog() {
@@ -97,6 +185,167 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
     );
   }
 
+  void _showEditTopicDialog(Map<String, dynamic> topic) {
+    final titleController = TextEditingController(text: topic['title']);
+    final descController = TextEditingController(text: topic['description'] ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('フォルダを編集'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                labelText: 'タイトル',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descController,
+              decoration: const InputDecoration(
+                labelText: '説明（任意）',
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (titleController.text.isEmpty) return;
+              await _apiService.updateTopic(
+                widget.situationId,
+                topic['id'],
+                titleController.text,
+                descController.text,
+              );
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              _loadSituation();
+            },
+            child: const Text('保存'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteTopic(int topicId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('削除しますか？'),
+        content: const Text('このフォルダ内の質問も削除されます。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('キャンセル'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('削除'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _apiService.deleteTopic(widget.situationId, topicId);
+      _loadSituation();
+    }
+  }
+
+  void _showQuestionDialog() {
+    if (_topics.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('先にフォルダを作成してください')),
+      );
+      return;
+    }
+
+    final questionController = TextEditingController();
+    final answerController = TextEditingController();
+    int selectedTopicId = _topics.first['id'];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('質問を追加'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<int>(
+                value: selectedTopicId,
+                decoration: const InputDecoration(labelText: 'フォルダ'),
+                items: _topics
+                    .map(
+                      (topic) => DropdownMenuItem<int>(
+                        value: topic['id'],
+                        child: Text(topic['title']),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    selectedTopicId = value;
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: questionController,
+                decoration: const InputDecoration(
+                  labelText: '質問',
+                  hintText: '例：自己紹介をしてください',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: answerController,
+                decoration: const InputDecoration(
+                  labelText: '回答',
+                  hintText: '準備しておきたい回答を入力してください',
+                ),
+                maxLines: 4,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (questionController.text.isNotEmpty) {
+                await _apiService.createQuestion(
+                  widget.situationId,
+                  selectedTopicId,
+                  questionController.text,
+                  answerController.text,
+                );
+                if (!context.mounted) return;
+                Navigator.pop(context);
+                _loadSituation();
+              }
+            },
+            child: const Text('追加'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,9 +382,9 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                   const Text('最初のトピックを作成して、会話の準備を始めましょう'),
                                   const SizedBox(height: 24),
                                   ElevatedButton.icon(
-                                    onPressed: _showCreateDialog,
+                                    onPressed: _showCreateOptions,
                                     icon: const Icon(Icons.add),
-                                    label: const Text('最初のトピックを作成'),
+                                    label: const Text('追加する'),
                                   ),
                                 ],
                               ),
@@ -148,51 +397,78 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                           itemBuilder: (context, index) {
                             final topic = _topics[index];
                             final count = _countQuestions(topic['id']);
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              elevation: 3,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                            return Slidable(
+                              key: ValueKey(topic['id']),
+                              endActionPane: ActionPane(
+                                motion: const StretchMotion(),
+                                extentRatio: 0.36,
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (_) => _showEditTopicDialog(topic),
+                                    backgroundColor: Colors.orange.shade600,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.edit,
+                                    label: '編集',
+                                  ),
+                                  SlidableAction(
+                                    onPressed: (_) => _deleteTopic(topic['id']),
+                                    backgroundColor: Colors.red.shade600,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete,
+                                    label: '削除',
+                                  ),
+                                ],
                               ),
-                              child: ListTile(
-                                title: Text(
-                                  topic['title'],
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                              child: Card(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                elevation: 3,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                subtitle: Text(topic['description'] ?? '説明なし'),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.help_outline, color: Colors.orange.shade600, size: 18),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '$count',
-                                      style: TextStyle(
-                                        color: Colors.orange.shade600,
-                                        fontWeight: FontWeight.bold,
+                                child: ListTile(
+                                  title: Text(
+                                    topic['title'],
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  subtitle: Text(topic['description'] ?? '説明なし'),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.help_outline, color: Colors.orange.shade600, size: 18),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        '$count',
+                                        style: TextStyle(
+                                          color: Colors.orange.shade600,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => TopicDetailScreen(
+                                          situationId: widget.situationId,
+                                          topicId: topic['id'],
+                                        ),
+                                      ),
+                                    ).then((_) => _loadSituation());
+                                  },
                                 ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => TopicDetailScreen(
-                                        situationId: widget.situationId,
-                                        topicId: topic['id'],
-                                      ),
-                                    ),
-                                  ).then((_) => _loadSituation());
-                                },
                               ),
                             );
                           },
                         ),
                 ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateDialog,
+        onPressed: _showCreateOptions,
         child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: AppBottomNav(
+        selectedIndex: 0,
+        onTap: _handleBottomNavTap,
       ),
     );
   }
