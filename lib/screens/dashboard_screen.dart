@@ -8,6 +8,7 @@ import 'situation_detail_screen.dart';
 import 'topic_detail_screen.dart';
 import 'search_screen.dart';
 import 'shuffle_screen.dart';
+import 'profile_screen.dart';
 import '../widgets/app_bottom_nav.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -743,8 +744,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _handleTabAction(int index) {
     if (index == 1) {
       _showCreateDialog();
-    } else if (index == 4) {
-      _showSettings();
     }
   }
 
@@ -780,6 +779,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        width: MediaQuery.of(context).size.width * 0.78,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF0B0B0B)
+            : Colors.white,
+        child: const ProfileDrawer(),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -787,18 +793,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Center(
-                      child: Text(
-                        'Talllk',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black87,
+                  Builder(
+                    builder: (context) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Row(
+                        children: [
+                          InkWell(
+                            onTap: () => Scaffold.of(context).openDrawer(),
+                            borderRadius: BorderRadius.circular(18),
+                          child: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white10
+                                  : Colors.black12,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: const Icon(Icons.person_outline, size: 16),
+                          ),
                         ),
+                          const Spacer(),
+                          Text(
+                            'Talllk',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black87,
+                            ),
+                          ),
+                          const Spacer(),
+                          const SizedBox(width: 36),
+                        ],
                       ),
                     ),
                   ),

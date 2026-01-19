@@ -307,44 +307,108 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                       style: TextStyle(fontWeight: FontWeight.w600),
                                     ),
                                     const SizedBox(height: 8),
-                                    ..._childTopics.map(
-                                      (child) => Card(
-                                        margin: const EdgeInsets.only(bottom: 10),
-                                        elevation: 2,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                            ? const Color(0xFF151515)
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white12
+                                              : Colors.black12,
                                         ),
-                                        child: ListTile(
-                                          leading: const Icon(Icons.folder_outlined),
-                                          title: Text(child['title'] ?? ''),
-                                          subtitle: Text(child['description'] ?? '説明なし'),
-                                          trailing: const Icon(Icons.chevron_right),
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => TopicDetailScreen(
-                                                  situationId: widget.situationId,
-                                                  topicId: child['id'],
+                                        boxShadow: Theme.of(context).brightness == Brightness.dark
+                                            ? []
+                                            : [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.06),
+                                                  blurRadius: 16,
+                                                  offset: const Offset(0, 8),
+                                                ),
+                                              ],
+                                      ),
+                                      child: Column(
+                                        children: List.generate(_childTopics.length, (index) {
+                                          final child = _childTopics[index];
+                                          final isLast = index == _childTopics.length - 1;
+                                          return Column(
+                                            children: [
+                                              Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => TopicDetailScreen(
+                                                          situationId: widget.situationId,
+                                                          topicId: child['id'],
+                                                        ),
+                                                      ),
+                                                    ).then((_) => _loadTopic());
+                                                  },
+                                                  borderRadius: BorderRadius.circular(16),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 8,
+                                                    ),
+                                                    child: Row(
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [
+                                                        Container(
+                                                          width: 30,
+                                                          height: 30,
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.orange.withValues(
+                                                              alpha: 0.18,
+                                                            ),
+                                                            borderRadius: BorderRadius.circular(10),
+                                                          ),
+                                                          child: Icon(
+                                                            Icons.folder_outlined,
+                                                            color: Colors.orange.shade600,
+                                                            size: 16,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: 12),
+                                                        Expanded(
+                                                          child: Text(
+                                                            child['title'] ?? '',
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: const TextStyle(
+                                                              fontWeight: FontWeight.w600,
+                                                              fontSize: 16,
+                                                              height: 1.2,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: 8),
+                                                        const Icon(Icons.chevron_right),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ).then((_) => _loadTopic());
-                                          },
-                                        ),
+                                              if (!isLast)
+                                                Divider(
+                                                  height: 1,
+                                                  thickness: 1,
+                                                  color:
+                                                      Theme.of(context).brightness == Brightness.dark
+                                                          ? Colors.white12
+                                                          : Colors.black12,
+                                                ),
+                                            ],
+                                          );
+                                        }),
                                       ),
                                     ),
                                     const SizedBox(height: 8),
                                   ],
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      ElevatedButton.icon(
-                                        onPressed: _showCreateOptions,
-                                        icon: const Icon(Icons.add, size: 20),
-                                        label: const Text('追加'),
-                                      ),
-                                    ],
-                                  ),
+                                  const SizedBox.shrink(),
                                 ],
                               ),
                               const SizedBox(height: 16),
@@ -388,202 +452,128 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                     final question = _topic!['questions'][index];
                                     final isExpanded = _expandedQuestionId == question['id'];
 
-                                    return Card(
-                                      margin: const EdgeInsets.only(bottom: 12),
-                                      elevation: 2,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                        side: BorderSide(
-                                          color: isExpanded
-                                              ? Colors.orange.shade300
-                                              : Colors.transparent,
-                                          width: 2,
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 8),
+                                      decoration: BoxDecoration(
+                                        color: isDark ? const Color(0xFF151515) : Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: isDark ? Colors.white12 : Colors.black12,
                                         ),
+                                        boxShadow: isDark
+                                            ? []
+                                            : [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.06),
+                                                  blurRadius: 16,
+                                                  offset: const Offset(0, 8),
+                                                ),
+                                              ],
                                       ),
-                                      child: InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            _expandedQuestionId = isExpanded ? null : question['id'];
-                                          });
-                                        },
-                                        borderRadius: BorderRadius.circular(16),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    width: 32,
-                                                    height: 32,
-                                                    decoration: BoxDecoration(
-                                                      gradient: LinearGradient(
-                                                        colors: [
-                                                          Colors.orange.shade500,
-                                                          Colors.orange.shade600,
-                                                        ],
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              _expandedQuestionId =
+                                                  isExpanded ? null : question['id'];
+                                            });
+                                          },
+                                          borderRadius: BorderRadius.circular(20),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 8,
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      width: 30,
+                                                      height: 30,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.orange.withValues(alpha: 0.18),
+                                                        borderRadius: BorderRadius.circular(10),
                                                       ),
-                                                      borderRadius: BorderRadius.circular(8),
+                                                      child: Icon(
+                                                        Icons.help_outline,
+                                                        color: Colors.orange.shade600,
+                                                        size: 16,
+                                                      ),
                                                     ),
-                                                    child: Center(
+                                                    const SizedBox(width: 12),
+                                                    Expanded(
                                                       child: Text(
-                                                        '${index + 1}',
+                                                        question['question'],
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
                                                         style: const TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: 16,
+                                                          height: 1.2,
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              'Q: ',
-                                                              style: TextStyle(
-                                                                color: Colors.orange.shade600,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 16,
-                                                              ),
-                                                            ),
-                                                            Expanded(
-                                                              child: Text(
-                                                                question['question'],
-                                                                style: const TextStyle(
-                                                                  fontWeight: FontWeight.bold,
-                                                                  fontSize: 16,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
+                                                    PopupMenuButton(
+                                                      itemBuilder: (context) => [
+                                                        const PopupMenuItem(
+                                                          value: 'edit',
+                                                          child: Row(
+                                                            children: [
+                                                              Icon(Icons.edit, size: 20),
+                                                              SizedBox(width: 8),
+                                                              Text('編集'),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const PopupMenuItem(
+                                                          value: 'delete',
+                                                          child: Row(
+                                                            children: [
+                                                              Icon(Icons.delete,
+                                                                  size: 20, color: Colors.red),
+                                                              SizedBox(width: 8),
+                                                              Text('削除',
+                                                                  style: TextStyle(color: Colors.red)),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ],
+                                                      onSelected: (value) {
+                                                        if (value == 'edit') {
+                                                          _showQuestionDialog(question: question);
+                                                        } else if (value == 'delete') {
+                                                          _deleteQuestion(question['id']);
+                                                        }
+                                                      },
                                                     ),
-                                                  ),
-                                                  PopupMenuButton(
-                                                    itemBuilder: (context) => [
-                                                      const PopupMenuItem(
-                                                        value: 'edit',
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(Icons.edit, size: 20),
-                                                            SizedBox(width: 8),
-                                                            Text('編集'),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      const PopupMenuItem(
-                                                        value: 'delete',
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(Icons.delete, size: 20, color: Colors.red),
-                                                            SizedBox(width: 8),
-                                                            Text('削除', style: TextStyle(color: Colors.red)),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                    onSelected: (value) {
-                                                      if (value == 'edit') {
-                                                        _showQuestionDialog(question: question);
-                                                      } else if (value == 'delete') {
-                                                        _deleteQuestion(question['id']);
-                                                      }
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 12),
-                                              AnimatedContainer(
-                                                duration: const Duration(milliseconds: 300),
-                                                constraints: BoxConstraints(
-                                                  maxHeight: isExpanded ? 500 : 100,
+                                                  ],
                                                 ),
-                                                child: Container(
-                                                  padding: const EdgeInsets.all(12),
+                                                if (isExpanded) ...[
+                                                  const SizedBox(height: 10),
+                                                  Container(
+                                                    width: double.infinity,
+                                                    padding: const EdgeInsets.all(12),
                                                     decoration: BoxDecoration(
-                                                      gradient: LinearGradient(
-                                                        colors: [
-                                                          Colors.grey.shade50,
-                                                          Colors.orange.shade50,
-                                                        ],
-                                                      ),
+                                                      color: isDark
+                                                          ? const Color(0xFF111111)
+                                                          : const Color(0xFF1B1B1B),
                                                       borderRadius: BorderRadius.circular(12),
                                                     ),
-                                                  child: SingleChildScrollView(
-                                                    child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          'A: ',
-                                                          style: TextStyle(
-                                                            color: Colors.green.shade600,
-                                                            fontWeight: FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                          child: Text(
-                                                            question['answer'] ?? '（未回答）',
-                                                            style: TextStyle(
-                                                              height: 1.5,
-                                                              color: isDark
-                                                                  ? Colors.grey.shade900
-                                                                  : Colors.black87,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
+                                                    child: Text(
+                                                      question['answer'] ?? '（未回答）',
+                                                      style: const TextStyle(
+                                                        height: 1.5,
+                                                        color: Colors.white,
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                              ),
-                                              if (!isExpanded && (question['answer']?.length ?? 0) > 100)
-                                                Padding(
-                                                  padding: const EdgeInsets.only(top: 8),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        'タップして全文を表示',
-                                                        style: TextStyle(
-                                                          color: Colors.orange.shade600,
-                                                          fontSize: 12,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        Icons.keyboard_arrow_down,
-                                                        size: 16,
-                                                        color: Colors.orange.shade600,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              if (isExpanded)
-                                                Padding(
-                                                  padding: const EdgeInsets.only(top: 8),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        'タップして閉じる',
-                                                        style: TextStyle(
-                                                          color: Colors.grey.shade600,
-                                                          fontSize: 12,
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        Icons.keyboard_arrow_up,
-                                                        size: 16,
-                                                        color: Colors.grey.shade600,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                            ],
+                                                ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -597,6 +587,10 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                     ),
                   ),
                 ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateOptions,
+        child: const Icon(Icons.add),
+      ),
       bottomNavigationBar: AppBottomNav(
         selectedIndex: 0,
         onTap: _handleBottomNavTap,

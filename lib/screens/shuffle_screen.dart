@@ -138,6 +138,15 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
     );
   }
 
+  void _resetShuffle() {
+    setState(() {
+      _remainingQuestionIds = _questions.map((q) => q['id'] as int).toList();
+      _currentQuestion = null;
+      _showAnswer = false;
+    });
+    _nextQuestion();
+  }
+
   void _handleBottomNavTap(int index) {
     if (index == 3) return;
     if (index == 2) {
@@ -210,7 +219,18 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
             else if (_questions.isEmpty)
               const Text('このシチュエーションに質問がありません。')
             else if (_currentQuestion == null)
-              const Text('質問がすべて出題されました。')
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('質問がすべて出題されました。'),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: _resetShuffle,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('リセット'),
+                  ),
+                ],
+              )
             else
               Card(
                 elevation: 2,

@@ -391,75 +391,128 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                             ),
                           ],
                         )
-                      : ListView.builder(
+                      : ListView(
                           padding: const EdgeInsets.all(16),
-                          itemCount: _topics.length,
-                          itemBuilder: (context, index) {
-                            final topic = _topics[index];
-                            final count = _countQuestions(topic['id']);
-                            return Slidable(
-                              key: ValueKey(topic['id']),
-                              endActionPane: ActionPane(
-                                motion: const StretchMotion(),
-                                extentRatio: 0.36,
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (_) => _showEditTopicDialog(topic),
-                                    backgroundColor: Colors.orange.shade600,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.edit,
-                                    label: '編集',
-                                  ),
-                                  SlidableAction(
-                                    onPressed: (_) => _deleteTopic(topic['id']),
-                                    backgroundColor: Colors.red.shade600,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    label: '削除',
-                                  ),
-                                ],
-                              ),
-                              child: Card(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                elevation: 3,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? const Color(0xFF151515)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white12
+                                      : Colors.black12,
                                 ),
-                                child: ListTile(
-                                  title: Text(
-                                    topic['title'],
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  subtitle: Text(topic['description'] ?? '説明なし'),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
+                                boxShadow: Theme.of(context).brightness == Brightness.dark
+                                    ? []
+                                    : [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.06),
+                                          blurRadius: 16,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ],
+                              ),
+                              child: Column(
+                                children: List.generate(_topics.length, (index) {
+                                  final topic = _topics[index];
+                                  final isLast = index == _topics.length - 1;
+                                  return Column(
                                     children: [
-                                      Icon(Icons.help_outline, color: Colors.orange.shade600, size: 18),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        '$count',
-                                        style: TextStyle(
-                                          color: Colors.orange.shade600,
-                                          fontWeight: FontWeight.bold,
+                                      Slidable(
+                                        key: ValueKey(topic['id']),
+                                        endActionPane: ActionPane(
+                                          motion: const StretchMotion(),
+                                          extentRatio: 0.36,
+                                          children: [
+                                            SlidableAction(
+                                              onPressed: (_) => _showEditTopicDialog(topic),
+                                              backgroundColor: Colors.orange.shade600,
+                                              foregroundColor: Colors.white,
+                                              icon: Icons.edit,
+                                              label: '編集',
+                                            ),
+                                            SlidableAction(
+                                              onPressed: (_) => _deleteTopic(topic['id']),
+                                              backgroundColor: Colors.red.shade600,
+                                              foregroundColor: Colors.white,
+                                              icon: Icons.delete,
+                                              label: '削除',
+                                            ),
+                                          ],
+                                        ),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => TopicDetailScreen(
+                                                    situationId: widget.situationId,
+                                                    topicId: topic['id'],
+                                                  ),
+                                                ),
+                                              ).then((_) => _loadSituation());
+                                            },
+                                            borderRadius: BorderRadius.circular(16),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 8,
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    width: 34,
+                                                    height: 34,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.orange.withValues(alpha: 0.18),
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.folder_outlined,
+                                                      color: Colors.orange.shade600,
+                                                      size: 18,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Text(
+                                                      topic['title'],
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 16,
+                                                        height: 1.2,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const Icon(Icons.chevron_right),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
+                                      if (!isLast)
+                                        Divider(
+                                          height: 1,
+                                          thickness: 1,
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white12
+                                              : Colors.black12,
+                                        ),
                                     ],
-                                  ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => TopicDetailScreen(
-                                          situationId: widget.situationId,
-                                          topicId: topic['id'],
-                                        ),
-                                      ),
-                                    ).then((_) => _loadSituation());
-                                  },
-                                ),
+                                  );
+                                }),
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
                 ),
       floatingActionButton: FloatingActionButton(

@@ -167,3 +167,151 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
+
+class ProfileDrawer extends StatelessWidget {
+  const ProfileDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final background = isDark ? const Color(0xFF0B0B0B) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.white60 : Colors.black54;
+
+    return Container(
+      color: background,
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 26,
+                  backgroundColor: Colors.orange.shade400,
+                  child: const Icon(Icons.person, color: Colors.white),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ユーザー',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: textColor,
+                      ),
+                    ),
+                    Text(
+                      '@talllk',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: subTextColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _drawerItem(
+              context,
+              icon: Icons.person_outline,
+              label: 'プロフィール',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                );
+              },
+            ),
+            _drawerItem(
+              context,
+              icon: Icons.palette_outlined,
+              label: '外観',
+              onTap: () {
+                Navigator.pop(context);
+                _showThemeDialog(context);
+              },
+            ),
+            _drawerItem(
+              context,
+              icon: Icons.settings_outlined,
+              label: '設定',
+              onTap: () => Navigator.pop(context),
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+            _drawerItem(
+              context,
+              icon: Icons.logout,
+              label: 'ログアウト',
+              onTap: () {
+                Provider.of<AuthProvider>(context, listen: false).logout();
+                Navigator.of(context).pushReplacementNamed('/login');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _drawerItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final iconColor = isDark ? Colors.white70 : Colors.black54;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: iconColor),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  void _showThemeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('外観'),
+        content: Consumer<ThemeProvider>(
+          builder: (context, themeProvider, child) {
+            return ListTile(
+              leading: Icon(
+                themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                color: Colors.orange,
+              ),
+              title: const Text('テーマ'),
+              subtitle: Text(themeProvider.isDarkMode ? 'ダーク' : 'ライト'),
+              trailing: Switch(
+                value: themeProvider.isDarkMode,
+                onChanged: (_) => themeProvider.toggleTheme(),
+              ),
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('閉じる'),
+          ),
+        ],
+      ),
+    );
+  }
+}
