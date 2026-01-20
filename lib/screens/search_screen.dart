@@ -132,8 +132,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _handleBottomNavTap(int index) {
-    if (index == 1) return;
-    if (index == 2) {
+    if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
@@ -205,7 +204,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: LinearProgressIndicator(minHeight: 2),
                 ),
               if (_situationMatches.isNotEmpty || _topicMatches.isNotEmpty) ...[
-                const Text('フォルダ', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text('フォルダ'),
                 const SizedBox(height: 8),
                 ..._situationMatches.map(
                   (situation) => ListTile(
@@ -246,7 +245,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 8),
               ],
               if (_questionMatches.isNotEmpty) ...[
-                const Text('ファイル', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text('ファイル'),
                 const SizedBox(height: 8),
                 ..._questionMatches.map(
                   (question) => ListTile(
@@ -289,7 +288,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ),
       bottomNavigationBar: AppBottomNav(
-        selectedIndex: 1,
+        selectedIndex: 0,
         onTap: _handleBottomNavTap,
       ),
     );

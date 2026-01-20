@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
-import '../providers/theme_provider.dart';
 import 'situation_detail_screen.dart';
 import 'topic_detail_screen.dart';
-import 'search_screen.dart';
 import 'shuffle_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/app_bottom_nav.dart';
@@ -33,6 +30,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<Map<String, dynamic>> _searchTopics = [];
   List<Map<String, dynamic>> _searchQuestions = [];
   List<int> _recentSituationIds = [];
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearchInline = false;
+  bool _isSearchIndexLoading = false;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -46,20 +47,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   void _handleInitialAction(int index) {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const SearchScreen()),
-      );
-      return;
-    }
-    if (index == 2) {
-      Navigator.push(
-        context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
       );
-      return;
     }
   }
 
@@ -291,229 +290,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _showSettings() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('設定'),
-        content: Consumer<ThemeProvider>(
-          builder: (context, themeProvider, child) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: Icon(
-                    themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                    color: Colors.orange,
-                  ),
-                  title: const Text('シチュエーション'),
-                  subtitle: Text(themeProvider.isDarkMode ? 'ダークモード' : 'ライトモード'),
-                  trailing: Switch(
-                    value: themeProvider.isDarkMode,
-                    onChanged: (_) => themeProvider.toggleTheme(),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('閉じる'),
-          ),
-        ],
-      ),
-    );
-  }
+  Future<void> _toggleSearchInline() async {
+    if (_isSearchInline) {
+      setState(() {
+        _isSearchInline = false;
+        _searchQuery = '';
+        _searchController.clear();
+      });
+      return;
+    }
 
-  void _showSearch() {
-    final controller = TextEditingController();
-    String query = '';
-    bool isLoading = true;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            if (isLoading) {
-              WidgetsBinding.instance.addPostFrameCallback((_) async {
-                await _buildSearchIndex();
-                if (!context.mounted) return;
-                setModalState(() {
-                  isLoading = false;
-                });
-              });
-            }
-
-            final lowerQuery = query.toLowerCase();
-            final situationMatches = _situations
-                .where((situation) =>
-                    (situation['title'] ?? '').toString().toLowerCase().contains(lowerQuery))
-                .toList();
-            final topicMatches = _searchTopics
-                .where((topic) =>
-                    (topic['title'] ?? '').toString().toLowerCase().contains(lowerQuery))
-                .toList();
-            final questionMatches = _searchQuestions
-                .where((question) =>
-                    (question['question'] ?? '').toString().toLowerCase().contains(lowerQuery))
-                .toList();
-
-            return SafeArea(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-                  left: 16,
-                  right: 16,
-                  top: 16,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.black12,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: controller,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: 'ファイル・フォルダを検索',
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: query.isEmpty
-                            ? null
-                            : IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () {
-                                  controller.clear();
-                                  setModalState(() {
-                                    query = '';
-                                  });
-                                },
-                              ),
-                      ),
-                      onChanged: (value) {
-                        setModalState(() {
-                          query = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    if (isLoading)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: CircularProgressIndicator(),
-                      )
-                    else if (query.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Text('検索ワードを入力してください'),
-                      )
-                    else ...[
-                      if (situationMatches.isNotEmpty || topicMatches.isNotEmpty) ...[
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'フォルダ',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ...situationMatches.map(
-                          (situation) => ListTile(
-                            leading: const Icon(Icons.folder_outlined),
-                            title: Text(situation['title']),
-                            subtitle: const Text('シチュエーション'),
-                            onTap: () {
-                              Navigator.pop(context);
-                              _recordRecentSituation(situation['id']);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SituationDetailScreen(situationId: situation['id']),
-                                ),
-                              ).then((_) => _loadSituations());
-                            },
-                          ),
-                        ),
-                        ...topicMatches.map(
-                          (topic) => ListTile(
-                            leading: const Icon(Icons.folder_open),
-                            title: Text(topic['title']),
-                            subtitle: Text(topic['situationTitle'] ?? ''),
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TopicDetailScreen(
-                                    situationId: topic['situationId'],
-                                    topicId: topic['id'],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-                      if (questionMatches.isNotEmpty) ...[
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'ファイル',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ...questionMatches.map(
-                          (question) => ListTile(
-                            leading: const Icon(Icons.description_outlined),
-                            title: Text(question['question']),
-                            subtitle: Text(question['topicTitle'] ?? ''),
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TopicDetailScreen(
-                                    situationId: question['situationId'],
-                                    topicId: question['topicId'],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                      if (situationMatches.isEmpty &&
-                          topicMatches.isEmpty &&
-                          questionMatches.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24),
-                          child: Text('該当する結果がありません'),
-                        ),
-                    ],
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+    setState(() {
+      _isSearchInline = true;
+      _isSearchIndexLoading = true;
+    });
+    await _buildSearchIndex();
+    if (!mounted) return;
+    setState(() {
+      _isSearchIndexLoading = false;
+    });
   }
 
   List<dynamic> _recentSituations() {
@@ -541,7 +336,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         const Text(
           '最近閲覧したページ',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
         ),
         const SizedBox(height: 10),
         SizedBox(
@@ -590,7 +385,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         situation['title'],
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
                       ),
                     ],
                   ),
@@ -599,6 +394,107 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildSearchInlineSection() {
+    final lowerQuery = _searchQuery.toLowerCase();
+    final situationMatches = _situations
+        .where((situation) =>
+            (situation['title'] ?? '').toString().toLowerCase().contains(lowerQuery))
+        .toList();
+    final topicMatches = _searchTopics
+        .where((topic) => (topic['title'] ?? '').toString().toLowerCase().contains(lowerQuery))
+        .toList();
+    final questionMatches = _searchQuestions
+        .where((question) =>
+            (question['question'] ?? '').toString().toLowerCase().contains(lowerQuery))
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_isSearchIndexLoading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_searchQuery.isEmpty)
+          const SizedBox.shrink()
+        else ...[
+          if (situationMatches.isNotEmpty || topicMatches.isNotEmpty) ...[
+            const Text('フォルダ'),
+            const SizedBox(height: 8),
+            ...situationMatches.map(
+              (situation) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.folder_outlined),
+                title: Text(situation['title']),
+                subtitle: const Text('シチュエーション'),
+                onTap: () {
+                  _recordRecentSituation(situation['id']);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SituationDetailScreen(situationId: situation['id']),
+                    ),
+                  ).then((_) => _loadSituations());
+                },
+              ),
+            ),
+            ...topicMatches.map(
+              (topic) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.folder_open),
+                title: Text(topic['title']),
+                subtitle: Text(topic['situationTitle'] ?? ''),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TopicDetailScreen(
+                        situationId: topic['situationId'],
+                        topicId: topic['id'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (questionMatches.isNotEmpty) ...[
+            const Text('ファイル'),
+            const SizedBox(height: 8),
+            ...questionMatches.map(
+              (question) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.description_outlined),
+                title: Text(question['question']),
+                subtitle: Text(question['topicTitle'] ?? ''),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TopicDetailScreen(
+                        situationId: question['situationId'],
+                        topicId: question['topicId'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+          if (situationMatches.isEmpty &&
+              topicMatches.isEmpty &&
+              questionMatches.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Text('該当する結果がありません'),
+            ),
+        ],
       ],
     );
   }
@@ -617,7 +513,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 16),
             const Text(
               'まだシチュエーションがありません',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 8),
             const Text('最初のシチュエーションを作成して、会話の準備を始めましょう'),
@@ -702,13 +598,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Row(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      child: SizedBox(
+                        height: 36,
+                        child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
-                            width: 30,
-                            height: 30,
+                            width: 28,
+                            height: 28,
                             decoration: BoxDecoration(
                               color: Colors.orange.withValues(alpha: 0.18),
                               borderRadius: BorderRadius.circular(10),
@@ -716,7 +614,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             child: Icon(
                               Icons.folder_outlined,
                               color: Colors.orange.shade600,
-                              size: 16,
+                              size: 15,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -726,15 +624,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                                fontWeight: FontWeight.w300,
+                                fontSize: 14,
                                 height: 1.2,
                               ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           const Icon(Icons.chevron_right),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -762,17 +661,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (index == 1) {
       await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const SearchScreen()),
-      );
-      if (!mounted) return;
-      setState(() {
-        _selectedTabIndex = 0;
-      });
-      return;
-    }
-    if (index == 2) {
-      await Navigator.push(
-        context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
       );
       if (!mounted) return;
@@ -797,68 +685,209 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: _loadSituations,
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Stack(
                 children: [
-                  Builder(
-                    builder: (context) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Row(
+                  AnimatedSlide(
+                    duration: const Duration(milliseconds: 260),
+                    curve: Curves.easeOut,
+                    offset: _isSearchInline ? const Offset(-1, 0) : Offset.zero,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 200),
+                      opacity: _isSearchInline ? 0 : 1,
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                         children: [
-                          InkWell(
-                            onTap: () => Scaffold.of(context).openDrawer(),
-                            borderRadius: BorderRadius.circular(18),
-                            child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white10
-                                    : Colors.black12,
-                                borderRadius: BorderRadius.circular(14),
+                          Builder(
+                            builder: (context) => AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 260),
+                              switchInCurve: Curves.easeOut,
+                              switchOutCurve: Curves.easeIn,
+                              transitionBuilder: (child, animation) {
+                                final offsetAnimation = Tween<Offset>(
+                                  begin: Offset(_isSearchInline ? 1 : -1, 0),
+                                  end: Offset.zero,
+                                ).animate(animation);
+                                return SlideTransition(
+                                  position: offsetAnimation,
+                                  child: FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: _isSearchInline
+                                  ? Padding(
+                                      key: const ValueKey('search-header'),
+                                      padding: const EdgeInsets.only(bottom: 16),
+                              child: SizedBox(
+                                height: 36,
+                                child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              controller: _searchController,
+                                              autofocus: true,
+                                              decoration: InputDecoration(
+                                                hintText: 'ファイル・フォルダを検索',
+                                                prefixIcon: const Icon(Icons.search, size: 18),
+                                                suffixIcon: IconButton(
+                                                  icon: const Icon(Icons.close, size: 18),
+                                                  onPressed: _toggleSearchInline,
+                                                ),
+                                                isDense: true,
+                                                contentPadding: const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 10,
+                                                ),
+                                              ),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _searchQuery = value;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                ],
                               ),
-                              child: const Icon(Icons.person_outline, size: 16),
+                            ),
+                                    )
+                                  : Padding(
+                                      key: const ValueKey('title-header'),
+                                      padding: const EdgeInsets.only(bottom: 16),
+                                      child: Row(
+                                        children: [
+                                          InkWell(
+                                            onTap: () => Scaffold.of(context).openDrawer(),
+                                            borderRadius: BorderRadius.circular(18),
+                                            child: Container(
+                                              width: 30,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).brightness == Brightness.dark
+                                                    ? Colors.white10
+                                                    : Colors.black12,
+                                                borderRadius: BorderRadius.circular(14),
+                                              ),
+                                              child: const Icon(Icons.person_outline, size: 16),
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Colors.orange.shade600,
+                                                width: 1.5,
+                                              ),
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Text(
+                                              'Talllk',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.orange.shade600,
+                                                letterSpacing: 0.5,
+                                              ),
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          InkWell(
+                                            onTap: _toggleSearchInline,
+                                            borderRadius: BorderRadius.circular(18),
+                                            child: Container(
+                                              width: 28,
+                                              height: 28,
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).brightness == Brightness.dark
+                                                    ? Colors.white10
+                                                    : Colors.black12,
+                                                borderRadius: BorderRadius.circular(14),
+                                              ),
+                                              child: const Icon(Icons.search, size: 15),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                             ),
                           ),
-                          const Spacer(),
-                          Text(
-                            'Talllk',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black87,
-                            ),
-                          ),
-                          const Spacer(),
-                          const SizedBox(width: 30),
-                        ],
-                      ),
-                    ),
-                  ),
-                  _buildRecentSection(),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
+                          _buildRecentSection(),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
                         'Talllkシチュエーション',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        '${_situations.length}件',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                              ),
+                              Text(
+                                '${_situations.length}件',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 11,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.white54
                               : Colors.black45,
                         ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          _buildFolderList(),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  _buildFolderList(),
+                  if (_isSearchInline)
+                    AnimatedSlide(
+                      duration: const Duration(milliseconds: 260),
+                      curve: Curves.easeOut,
+                      offset: _isSearchInline ? Offset.zero : const Offset(1, 0),
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: _isSearchInline ? 1 : 0,
+                        child: ListView(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  autofocus: true,
+                                  decoration: InputDecoration(
+                                    hintText: 'ファイル・フォルダを検索',
+                                    prefixIcon: const Icon(Icons.search, size: 18),
+                                    suffixIcon: IconButton(
+                                      icon: const Icon(Icons.close, size: 18),
+                                      onPressed: _toggleSearchInline,
+                                    ),
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 10,
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _searchQuery = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                            _buildSearchInlineSection(),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

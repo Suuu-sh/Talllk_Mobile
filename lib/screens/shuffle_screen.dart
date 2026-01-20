@@ -148,14 +148,7 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
   }
 
   void _handleBottomNavTap(int index) {
-    if (index == 2) return;
-    if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const SearchScreen()),
-      );
-      return;
-    }
+    if (index == 1) return;
     if (index == 0) {
       Navigator.pushAndRemoveUntil(
         context,
@@ -185,7 +178,7 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
           children: [
             const Text(
               'シャッフル',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
             ),
             const SizedBox(height: 12),
             if (_isLoading)
@@ -245,8 +238,8 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
                       Text(
                         _currentQuestion?['question'] ?? '',
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -291,7 +284,7 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
         ),
       ),
       bottomNavigationBar: AppBottomNav(
-        selectedIndex: 2,
+        selectedIndex: 1,
         onTap: _handleBottomNavTap,
       ),
     );

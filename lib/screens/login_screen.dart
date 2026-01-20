@@ -89,8 +89,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Talllk',
                       style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
                         color: Colors.orange.shade600,
                         letterSpacing: 1.0,
                       ),
@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     '会話の準備をサポート',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: Colors.grey.shade600,
                     ),
                   ),

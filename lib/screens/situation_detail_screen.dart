@@ -100,13 +100,6 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const SearchScreen()),
-      );
-      return;
-    }
-    if (index == 2) {
-      Navigator.push(
-        context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
       );
       return;
@@ -373,10 +366,7 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                   const SizedBox(height: 16),
                                   const Text(
                                     'まだトピックがありません',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: TextStyle(fontSize: 14),
                                   ),
                                   const SizedBox(height: 8),
                                   const Text('最初のトピックを作成して、会話の準備を始めましょう'),
@@ -461,14 +451,14 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                             child: Padding(
                                               padding: const EdgeInsets.symmetric(
                                                 horizontal: 16,
-                                                vertical: 8,
+                                                vertical: 6,
                                               ),
                                               child: Row(
                                                 crossAxisAlignment: CrossAxisAlignment.center,
                                                 children: [
                                                   Container(
-                                                    width: 34,
-                                                    height: 34,
+                                                    width: 28,
+                                                    height: 28,
                                                     decoration: BoxDecoration(
                                                       color: Colors.orange.withValues(alpha: 0.18),
                                                       borderRadius: BorderRadius.circular(12),
@@ -476,7 +466,7 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                                     child: Icon(
                                                       Icons.folder_outlined,
                                                       color: Colors.orange.shade600,
-                                                      size: 18,
+                                                      size: 15,
                                                     ),
                                                   ),
                                                   const SizedBox(width: 12),
@@ -485,11 +475,11 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                                       topic['title'],
                                                       maxLines: 1,
                                                       overflow: TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                        fontWeight: FontWeight.w600,
-                                                        fontSize: 16,
-                                                        height: 1.2,
-                                                      ),
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.w400,
+                                                          fontSize: 14,
+                                                          height: 1.2,
+                                                        ),
                                                     ),
                                                   ),
                                                   const Icon(Icons.chevron_right),

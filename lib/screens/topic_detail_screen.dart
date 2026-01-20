@@ -242,13 +242,6 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const SearchScreen()),
-      );
-      return;
-    }
-    if (index == 2) {
-      Navigator.push(
-        context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
       );
       return;
@@ -302,10 +295,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (_childTopics.isNotEmpty) ...[
-                                    const Text(
-                                      'フォルダ',
-                                      style: TextStyle(fontWeight: FontWeight.w600),
-                                    ),
+                                    const Text('フォルダ'),
                                     const SizedBox(height: 8),
                                     Container(
                                       decoration: BoxDecoration(
@@ -352,14 +342,14 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(
                                                       horizontal: 16,
-                                                      vertical: 8,
+                                                      vertical: 6,
                                                     ),
                                                     child: Row(
                                                       crossAxisAlignment: CrossAxisAlignment.center,
                                                       children: [
                                                         Container(
-                                                          width: 30,
-                                                          height: 30,
+                                                          width: 28,
+                                                          height: 28,
                                                           decoration: BoxDecoration(
                                                             color: Colors.orange.withValues(
                                                               alpha: 0.18,
@@ -369,7 +359,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                           child: Icon(
                                                             Icons.folder_outlined,
                                                             color: Colors.orange.shade600,
-                                                            size: 16,
+                                                            size: 15,
                                                           ),
                                                         ),
                                                         const SizedBox(width: 12),
@@ -378,11 +368,11 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                             child['title'] ?? '',
                                                             maxLines: 1,
                                                             overflow: TextOverflow.ellipsis,
-                                                            style: const TextStyle(
-                                                              fontWeight: FontWeight.w600,
-                                                              fontSize: 16,
-                                                              height: 1.2,
-                                                            ),
+                                                              style: const TextStyle(
+                                                                fontWeight: FontWeight.w400,
+                                                                fontSize: 14,
+                                                                height: 1.2,
+                                                              ),
                                                           ),
                                                         ),
                                                         const SizedBox(width: 8),
@@ -412,10 +402,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                 ],
                               ),
                               const SizedBox(height: 16),
-                              const Text(
-                                '質問',
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
+                              const Text('質問'),
                               const SizedBox(height: 8),
                               if (_topic!['questions']?.isEmpty ?? true)
                                 Center(
@@ -431,10 +418,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                         const SizedBox(height: 16),
                                         const Text(
                                           'まだ質問がありません',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          style: TextStyle(fontSize: 14),
                                         ),
                                         const SizedBox(height: 8),
                                         const Text('最初の質問を追加して、回答を準備しましょう'),
@@ -488,7 +472,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 16,
-                                              vertical: 8,
+                                              vertical: 6,
                                             ),
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -497,8 +481,8 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                   crossAxisAlignment: CrossAxisAlignment.center,
                                                   children: [
                                                     Container(
-                                                      width: 30,
-                                                      height: 30,
+                                                      width: 28,
+                                                      height: 28,
                                                       decoration: BoxDecoration(
                                                         color: Colors.orange.withValues(alpha: 0.18),
                                                         borderRadius: BorderRadius.circular(10),
@@ -506,7 +490,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                       child: Icon(
                                                         Icons.help_outline,
                                                         color: Colors.orange.shade600,
-                                                        size: 16,
+                                                        size: 15,
                                                       ),
                                                     ),
                                                     const SizedBox(width: 12),
@@ -516,8 +500,8 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                         maxLines: 1,
                                                         overflow: TextOverflow.ellipsis,
                                                         style: const TextStyle(
-                                                          fontWeight: FontWeight.w600,
-                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.w400,
+                                                          fontSize: 14,
                                                           height: 1.2,
                                                         ),
                                                       ),

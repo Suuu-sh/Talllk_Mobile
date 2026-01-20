@@ -105,7 +105,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       onTap: () => _onTabTapped(index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOutCubic,
         padding: EdgeInsets.symmetric(
           horizontal: isActive ? 16 : 12,
           vertical: 8,
@@ -119,24 +120,36 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              color: isActive
-                  ? Colors.blue
-                  : (isDark ? Colors.white60 : Colors.black54),
-              size: 24,
-            ),
-            if (isActive) ...[
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                isActive ? activeIcon : icon,
+                key: ValueKey(isActive),
+                color: isActive
+                    ? Colors.blue
+                    : (isDark ? Colors.white60 : Colors.black54),
+                size: 24,
               ),
-            ],
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOutCubic,
+              child: isActive
+                  ? Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        Text(
+                          label,
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
           ],
         ),
       ),

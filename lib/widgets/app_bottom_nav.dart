@@ -18,7 +18,7 @@ class AppBottomNav extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            const itemCount = 3;
+            const itemCount = 2;
             return Container(
               height: 58,
               decoration: BoxDecoration(
@@ -51,11 +51,7 @@ class AppBottomNav extends StatelessWidget {
                           onTap: () => onTap(index),
                           child: Center(
                             child: Icon(
-                              index == 0
-                                  ? Icons.home_outlined
-                                  : index == 1
-                                      ? Icons.search_outlined
-                                      : Icons.shuffle,
+                              index == 0 ? Icons.home_outlined : Icons.shuffle,
                               size: 24,
                               color: iconColor,
                             ),

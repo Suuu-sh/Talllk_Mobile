@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   'Talllk',
                   style: TextStyle(
                     fontSize: 36,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w300,
                     color: Colors.orange.shade600,
                     letterSpacing: 1.2,
                   ),
@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 'Talllk',
                 style: TextStyle(
                   fontSize: 48,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w300,
                   color: Colors.orange.shade600,
                 ),
               ),

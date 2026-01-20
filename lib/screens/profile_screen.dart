@@ -25,8 +25,8 @@ class ProfileScreen extends StatelessWidget {
               title: Text(
                 'プロフィール',
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
                   color: isDark ? Colors.white : Colors.black87,
                 ),
               ),
@@ -56,8 +56,8 @@ class ProfileScreen extends StatelessWidget {
                   Text(
                     'ユーザー',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                   ),
@@ -75,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
                               themeProvider.isDarkMode ? 'ダーク' : 'ライト',
                               style: TextStyle(
                                 color: isDark ? Colors.white60 : Colors.black54,
-                                fontSize: 14,
+                                fontSize: 12,
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -97,7 +97,7 @@ class ProfileScreen extends StatelessWidget {
                       '1.0.0',
                       style: TextStyle(
                         color: isDark ? Colors.white60 : Colors.black54,
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                     ),
                   ),
@@ -155,8 +155,8 @@ class ProfileScreen extends StatelessWidget {
             child: Text(
               title,
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
                 color: isDark ? Colors.white : Colors.black87,
               ),
             ),
@@ -198,8 +198,8 @@ class ProfileDrawer extends StatelessWidget {
                     Text(
                       'ユーザー',
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w300,
                         color: textColor,
                       ),
                     ),
@@ -275,8 +275,8 @@ class ProfileDrawer extends StatelessWidget {
       title: Text(
         label,
         style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
           color: textColor,
         ),
       ),
