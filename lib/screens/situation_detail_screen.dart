@@ -97,14 +97,14 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
   }
 
   void _handleBottomNavTap(int index) {
-    if (index == 2) {
+    if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const SearchScreen()),
       );
       return;
     }
-    if (index == 3) {
+    if (index == 2) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
@@ -515,7 +515,7 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                           ],
                         ),
                 ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.small(
         onPressed: _showCreateOptions,
         child: const Icon(Icons.add),
       ),

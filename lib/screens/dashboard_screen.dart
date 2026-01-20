@@ -42,11 +42,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _loadSituations();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || widget.initialActionIndex == null) return;
-      setState(() {
-        _selectedTabIndex = widget.initialActionIndex!;
-      });
-      _handleTabAction(widget.initialActionIndex!);
+      _handleInitialAction(widget.initialActionIndex!);
     });
+  }
+
+  void _handleInitialAction(int index) {
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SearchScreen()),
+      );
+      return;
+    }
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ShuffleScreen()),
+      );
+      return;
+    }
   }
 
   Future<void> _loadRecentSituations() async {
@@ -741,17 +755,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _handleTabAction(int index) {
-    if (index == 1) {
-      _showCreateDialog();
-    }
-  }
-
   Future<void> _handleTabTap(int index) async {
     setState(() {
       _selectedTabIndex = index;
     });
-    if (index == 2) {
+    if (index == 1) {
       await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const SearchScreen()),
@@ -762,7 +770,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
       return;
     }
-    if (index == 3) {
+    if (index == 2) {
       await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
@@ -773,7 +781,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
       return;
     }
-    _handleTabAction(index);
   }
 
   @override
@@ -801,18 +808,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           InkWell(
                             onTap: () => Scaffold.of(context).openDrawer(),
                             borderRadius: BorderRadius.circular(18),
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white10
-                                  : Colors.black12,
-                              borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white10
+                                    : Colors.black12,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(Icons.person_outline, size: 16),
                             ),
-                            child: const Icon(Icons.person_outline, size: 16),
                           ),
-                        ),
                           const Spacer(),
                           Text(
                             'Talllk',
@@ -825,7 +832,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                           const Spacer(),
-                          const SizedBox(width: 36),
+                          const SizedBox(width: 30),
                         ],
                       ),
                     ),
@@ -858,6 +865,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       bottomNavigationBar: AppBottomNav(
         selectedIndex: _selectedTabIndex,
         onTap: _handleTabTap,
+      ),
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: _showCreateDialog,
+        child: const Icon(Icons.add),
       ),
     );
   }

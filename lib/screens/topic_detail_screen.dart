@@ -239,14 +239,14 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
   }
 
   void _handleBottomNavTap(int index) {
-    if (index == 2) {
+    if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const SearchScreen()),
       );
       return;
     }
-    if (index == 3) {
+    if (index == 2) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
@@ -412,6 +412,11 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                 ],
                               ),
                               const SizedBox(height: 16),
+                              const Text(
+                                '質問',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(height: 8),
                               if (_topic!['questions']?.isEmpty ?? true)
                                 Center(
                                   child: Padding(
@@ -587,7 +592,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                     ),
                   ),
                 ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.small(
         onPressed: _showCreateOptions,
         child: const Icon(Icons.add),
       ),

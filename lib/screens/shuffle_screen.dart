@@ -148,8 +148,8 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
   }
 
   void _handleBottomNavTap(int index) {
-    if (index == 3) return;
-    if (index == 2) {
+    if (index == 2) return;
+    if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const SearchScreen()),
@@ -291,7 +291,7 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
         ),
       ),
       bottomNavigationBar: AppBottomNav(
-        selectedIndex: 3,
+        selectedIndex: 2,
         onTap: _handleBottomNavTap,
       ),
     );

@@ -18,7 +18,7 @@ class AppBottomNav extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            const itemCount = 4;
+            const itemCount = 3;
             return Container(
               height: 58,
               decoration: BoxDecoration(
@@ -54,10 +54,8 @@ class AppBottomNav extends StatelessWidget {
                               index == 0
                                   ? Icons.home_outlined
                                   : index == 1
-                                      ? Icons.add_circle_outline
-                                      : index == 2
-                                          ? Icons.search_outlined
-                                          : Icons.shuffle,
+                                      ? Icons.search_outlined
+                                      : Icons.shuffle,
                               size: 24,
                               color: iconColor,
                             ),
