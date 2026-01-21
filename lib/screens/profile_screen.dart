@@ -43,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
                     height: 100,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [AppColors.primary, AppColors.secondary],
+                        colors: [AppColors.orange600, AppColors.orange600],
                       ),
                       shape: BoxShape.circle,
                     ),

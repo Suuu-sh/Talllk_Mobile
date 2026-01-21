@@ -35,9 +35,9 @@ class TalllkApp extends StatelessWidget {
     
     // Modern color scheme - Blue/Purple gradient
     final lightScheme = const ColorScheme.light(
-      primary: AppColors.primary,
-      secondary: AppColors.secondary,
-      tertiary: AppColors.tertiary,
+      primary: AppColors.orange600,
+      secondary: AppColors.orange600,
+      tertiary: AppColors.orange600,
       surface: AppColors.white,
       background: AppColors.lightScaffold,
       error: AppColors.error,
@@ -48,9 +48,9 @@ class TalllkApp extends StatelessWidget {
     );
     
     final darkScheme = const ColorScheme.dark(
-      primary: AppColors.primaryLight,
-      secondary: AppColors.secondaryLight,
-      tertiary: AppColors.tertiaryLight,
+      primary: AppColors.orange500,
+      secondary: AppColors.orange500,
+      tertiary: AppColors.orange500,
       surface: AppColors.darkSurface,
       background: AppColors.darkScaffold,
       error: AppColors.errorLight,
@@ -104,7 +104,7 @@ class TalllkApp extends StatelessWidget {
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: AppColors.orange600,
                 foregroundColor: AppColors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -119,7 +119,7 @@ class TalllkApp extends StatelessWidget {
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.primary,
+                foregroundColor: AppColors.orange600,
                 textStyle: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w300,
@@ -127,7 +127,7 @@ class TalllkApp extends StatelessWidget {
               ),
             ),
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.orange600,
               foregroundColor: AppColors.white,
               elevation: 2,
             ),
@@ -145,7 +145,7 @@ class TalllkApp extends StatelessWidget {
               ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
-                borderSide: BorderSide(color: AppColors.primary, width: 2),
+                borderSide: BorderSide(color: AppColors.orange600, width: 2),
               ),
               labelStyle: GoogleFonts.inter(
                 fontSize: 14,
@@ -192,7 +192,7 @@ class TalllkApp extends StatelessWidget {
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
+                backgroundColor: AppColors.orange500,
                 foregroundColor: AppColors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -207,7 +207,7 @@ class TalllkApp extends StatelessWidget {
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.primaryLight,
+                foregroundColor: AppColors.orange500,
                 textStyle: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w300,
@@ -215,7 +215,7 @@ class TalllkApp extends StatelessWidget {
               ),
             ),
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: AppColors.primaryLight,
+              backgroundColor: AppColors.orange500,
               foregroundColor: AppColors.white,
               elevation: 2,
             ),
@@ -233,7 +233,7 @@ class TalllkApp extends StatelessWidget {
               ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
-                borderSide: BorderSide(color: AppColors.primaryLight, width: 2),
+                borderSide: BorderSide(color: AppColors.orange500, width: 2),
               ),
               labelStyle: GoogleFonts.inter(
                 fontSize: 14,

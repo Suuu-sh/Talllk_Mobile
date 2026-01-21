@@ -574,15 +574,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: isDark
-                              ? [AppColors.primaryLight, AppColors.primary]
-                              : [AppColors.primaryLight, AppColors.primary],
+                              ? [AppColors.orange500, AppColors.orange600]
+                              : [AppColors.orange500, AppColors.orange600],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.25),
+                            color: AppColors.orange600.withOpacity(0.25),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),

@@ -26,13 +26,6 @@ class AppColors {
   static const Color darkBodyText = Color(0xFFF9FAFB);
   static const Color darkMutedText = Color(0xFF9CA3AF);
 
-  static const Color primary = Color(0xFF6366F1);
-  static const Color primaryLight = Color(0xFF818CF8);
-  static const Color secondary = Color(0xFF8B5CF6);
-  static const Color secondaryLight = Color(0xFFA78BFA);
-  static const Color tertiary = Color(0xFF06B6D4);
-  static const Color tertiaryLight = Color(0xFF22D3EE);
-
   static const Color error = Color(0xFFEF4444);
   static const Color errorLight = Color(0xFFF87171);
   static const Color red200 = Color(0xFFEF9A9A);

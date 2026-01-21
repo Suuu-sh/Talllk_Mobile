@@ -115,8 +115,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         decoration: BoxDecoration(
           color: isActive
               ? (isDark
-                  ? AppColors.primary.withOpacity(0.2)
-                  : AppColors.primary.withOpacity(0.1))
+                  ? AppColors.orange600.withOpacity(0.2)
+                  : AppColors.orange600.withOpacity(0.1))
               : AppColors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
@@ -129,7 +129,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 isActive ? activeIcon : icon,
                 key: ValueKey(isActive),
                 color: isActive
-                    ? AppColors.primary
+                    ? AppColors.orange600
                     : (isDark ? AppColors.white60 : AppColors.black60),
                 size: 24,
               ),
@@ -144,7 +144,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                         Text(
                           label,
                           style: const TextStyle(
-                            color: AppColors.primary,
+                            color: AppColors.orange600,
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                           ),
