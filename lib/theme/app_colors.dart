@@ -27,17 +27,8 @@ class AppColors {
   static const Color red200 = Color(0xFFEF9A9A);
   static const Color red700 = Color(0xFFD32F2F);
 
-  static const Color orange50 = Color(0xFFFFF3E0);
-  static const Color orange100 = Color(0xFFFFE0B2);
-  static const Color orange200 = Color(0xFFFFCC80);
-  static const Color orange400 = Color(0xFFFFA726);
   static const Color orange500 = Color(0xFFFF9800);
   static const Color orange600 = Color(0xFFFB8C00);
-  static const Color orange700 = Color(0xFFF57C00);
-
-  static const Color orangeUi500 = Color(0xFFFB923C);
-  static const Color orangeUi600 = Color(0xFFF97316);
-  static const Color orangeDeep = Color(0xFF5C3A12);
 
   static const Color lightText = Color(0xFF111827);
   static const Color lightBodyText = Color(0xFF1F2937);

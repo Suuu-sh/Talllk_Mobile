@@ -189,7 +189,7 @@ class ProfileDrawer extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 26,
-                  backgroundColor: AppColors.orange400,
+                  backgroundColor: AppColors.orange500,
                   child: const Icon(Icons.person, color: AppColors.white),
                 ),
                 const SizedBox(width: 12),

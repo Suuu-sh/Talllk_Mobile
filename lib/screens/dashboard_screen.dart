@@ -362,10 +362,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   width: 140,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkSurface : AppColors.lightSecondary,
+                    color: isDark ? AppColors.darkSurface : AppColors.white,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: isDark ? AppColors.white10 : AppColors.black12,
+                      color: isDark ? AppColors.white12 : AppColors.black12,
                     ),
                     boxShadow: isDark
                         ? []
@@ -608,15 +608,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: isDark
-                              ? [AppColors.orangeUi500, AppColors.orangeUi600]
-                              : [AppColors.orangeUi500, AppColors.orangeUi600],
+                              ? [AppColors.orange500, AppColors.orange600]
+                              : [AppColors.orange500, AppColors.orange600],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.orangeUi600.withOpacity(0.25),
+                            color: AppColors.orange600.withOpacity(0.25),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
@@ -814,8 +814,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               height: 30,
                                               decoration: BoxDecoration(
                                                 color: Theme.of(context).brightness == Brightness.dark
-                                                    ? AppColors.white10
-                                                    : AppColors.black12,
+                                                    ? AppColors.darkSurface
+                                                    : AppColors.white,
+                                                border: Border.all(
+                                                  color:
+                                                      Theme.of(context).brightness == Brightness.dark
+                                                          ? AppColors.white12
+                                                          : AppColors.black12,
+                                                ),
                                                 borderRadius: BorderRadius.circular(14),
                                               ),
                                               child: const Icon(Icons.person_outline, size: 16),
@@ -853,8 +859,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               height: 28,
                                               decoration: BoxDecoration(
                                                 color: Theme.of(context).brightness == Brightness.dark
-                                                    ? AppColors.white10
-                                                    : AppColors.black12,
+                                                    ? AppColors.darkSurface
+                                                    : AppColors.white,
+                                                border: Border.all(
+                                                  color:
+                                                      Theme.of(context).brightness == Brightness.dark
+                                                          ? AppColors.white12
+                                                          : AppColors.black12,
+                                                ),
                                                 borderRadius: BorderRadius.circular(14),
                                               ),
                                               child: const Icon(Icons.search, size: 15),

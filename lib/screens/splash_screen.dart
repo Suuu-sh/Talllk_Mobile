@@ -39,8 +39,8 @@ class _SplashScreenState extends State<SplashScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.orange50,
-              AppColors.orange100,
+              AppColors.orange500,
+              AppColors.orange600,
             ],
           ),
         ),
