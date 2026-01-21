@@ -167,11 +167,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextFormField(
                                 controller: _nameController,
                                 decoration: const InputDecoration(
-                                  labelText: '名前',
+                                  labelText: 'ユーザーID',
                                   border: OutlineInputBorder(),
+                                  prefixText: '@',
                                 ),
                                 validator: (value) =>
-                                    value?.isEmpty ?? true ? '名前を入力してください' : null,
+                                    value?.isEmpty ?? true ? 'ユーザーIDを入力してください' : null,
                               ),
                             if (!_isLogin) const SizedBox(height: 16),
                             TextFormField(

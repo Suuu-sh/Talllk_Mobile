@@ -744,9 +744,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 200),
                       opacity: _isSearchInline ? 0 : 1,
-                      child: ListView(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        children: [
+                      child: SafeArea(
+                        bottom: false,
+                        child: ListView(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          children: [
                           Builder(
                             builder: (context) => AnimatedSwitcher(
                               duration: const Duration(milliseconds: 260),
@@ -899,7 +901,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           const SizedBox(height: 8),
                           _buildFolderList(),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -911,13 +914,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: AnimatedOpacity(
                         duration: const Duration(milliseconds: 200),
                         opacity: _isSearchInline ? 1 : 0,
-                        child: ListView(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                          children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: Row(
+                        child: SafeArea(
+                          bottom: false,
+                          child: ListView(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: Row(
+                              children: [
                               Expanded(
                                 child: TextField(
                                   controller: _searchController,
@@ -947,6 +952,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                             _buildSearchInlineSection(),
                           ],
+                          ),
                         ),
                       ),
                     ),

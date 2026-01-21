@@ -15,6 +15,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
+    await prefs.remove('user_name');
     _isAuthenticated = false;
     notifyListeners();
   }

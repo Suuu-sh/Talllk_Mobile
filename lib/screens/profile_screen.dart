@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  Future<String?> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_name');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,31 +44,21 @@ class ProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [AppColors.orange600, AppColors.orange600],
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.person,
-                      size: 50,
-                      color: AppColors.white,
-                    ),
+                  FutureBuilder<String?>(
+                    future: _loadUserName(),
+                    builder: (context, snapshot) {
+                      final name = snapshot.data?.trim();
+                      return Text(
+                        name?.isNotEmpty == true ? name! : 'ユーザー',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w300,
+                          color: isDark ? AppColors.white : AppColors.lightText,
+                        ),
+                      );
+                    },
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'ユーザー',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w300,
-                      color: isDark ? AppColors.white : AppColors.lightText,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
                   _buildSettingItem(
                     context: context,
                     icon: Icons.palette_outlined,
@@ -172,88 +168,136 @@ class ProfileScreen extends StatelessWidget {
 class ProfileDrawer extends StatelessWidget {
   const ProfileDrawer({super.key});
 
+  Future<String?> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_name');
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background = isDark ? AppColors.darkDrawer : AppColors.white;
-    final textColor = isDark ? AppColors.white : AppColors.lightText;
-    final subTextColor = isDark ? AppColors.white60 : AppColors.black60;
+    final background = isDark ? const Color(0xFF0A0A0A) : Colors.white;
 
     return Container(
-      color: background,
+      decoration: BoxDecoration(
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF0A0A0A),
+                  const Color(0xFF0F0F0F),
+                ],
+              )
+            : null,
+        color: isDark ? null : Colors.white,
+      ),
       child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Column(
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: AppColors.orange500,
-                  child: const Icon(Icons.person, color: AppColors.white),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'ユーザー',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w300,
-                        color: textColor,
-                      ),
+            // Header Section
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Profile Avatar with gradient
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.orange500.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Text(
-                      '@talllk',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: subTextColor,
-                      ),
+                    child: FutureBuilder<String?>(
+                      future: _loadUserName(),
+                      builder: (context, snapshot) {
+                        final name = snapshot.data?.trim();
+                        final handle = name?.isNotEmpty == true ? name! : 'talllk';
+                        return Text(
+                          '@$handle',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.orange600,
+                          ),
+                        );
+                      },
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+            
+            // Menu Items
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                children: [
+                  _drawerItem(
+                    context,
+                    icon: Icons.person_outline_rounded,
+                    label: 'プロフィール',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 2),
+                  _drawerItem(
+                    context,
+                    icon: Icons.palette_outlined,
+                    label: '外観',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showThemeDialog(context);
+                    },
+                  ),
+                  const SizedBox(height: 2),
+                  _drawerItem(
+                    context,
+                    icon: Icons.settings_outlined,
+                    label: '設定',
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Divider(
+                      height: 1,
+                      color: isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.black.withOpacity(0.1),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _drawerItem(
+                    context,
+                    icon: Icons.logout_rounded,
+                    label: 'ログアウト',
+                    isDestructive: true,
+                    onTap: () {
+                      Provider.of<AuthProvider>(context, listen: false).logout();
+                      Navigator.of(context).pushReplacementNamed('/login');
+                    },
+                  ),
+                ],
+              ),
+            ),
+            
+            // Footer
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                'Talllk v1.0.0',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: isDark
+                      ? Colors.white.withOpacity(0.3)
+                      : Colors.black.withOpacity(0.3),
                 ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            _drawerItem(
-              context,
-              icon: Icons.person_outline,
-              label: 'プロフィール',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                );
-              },
-            ),
-            _drawerItem(
-              context,
-              icon: Icons.palette_outlined,
-              label: '外観',
-              onTap: () {
-                Navigator.pop(context);
-                _showThemeDialog(context);
-              },
-            ),
-            _drawerItem(
-              context,
-              icon: Icons.settings_outlined,
-              label: '設定',
-              onTap: () => Navigator.pop(context),
-            ),
-            const SizedBox(height: 16),
-            const Divider(height: 1),
-            const SizedBox(height: 16),
-            _drawerItem(
-              context,
-              icon: Icons.logout,
-              label: 'ログアウト',
-              onTap: () {
-                Provider.of<AuthProvider>(context, listen: false).logout();
-                Navigator.of(context).pushReplacementNamed('/login');
-              },
+              ),
             ),
           ],
         ),
@@ -266,22 +310,68 @@ class ProfileDrawer extends StatelessWidget {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    bool isDestructive = false,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.white : AppColors.lightText;
-    final iconColor = isDark ? AppColors.white60 : AppColors.black60;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: iconColor),
-      title: Text(
-        label,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: textColor,
+    
+    return Material(
+      color: AppColors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : AppColors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDark ? AppColors.white12 : AppColors.black12,
+            ),
+          ),
+          child: SizedBox(
+            height: 36,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: isDestructive
+                        ? AppColors.error.withOpacity(0.12)
+                        : AppColors.orange500.withOpacity(0.18),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 16,
+                    color: isDestructive ? AppColors.error : AppColors.orange600,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      height: 1.2,
+                      color: isDestructive
+                          ? AppColors.error
+                          : (isDark ? AppColors.white : AppColors.lightText),
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 16,
+                  color: isDark ? AppColors.white60 : AppColors.black60,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      onTap: onTap,
     );
   }
 
@@ -295,7 +385,7 @@ class ProfileDrawer extends StatelessWidget {
             return ListTile(
               leading: Icon(
                 themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                color: AppColors.orange500,
+                color: const Color(0xFF6366F1),
               ),
               title: const Text('テーマ'),
               subtitle: Text(themeProvider.isDarkMode ? 'ダーク' : 'ライト'),

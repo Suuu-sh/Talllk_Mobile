@@ -36,7 +36,13 @@ class ApiService {
       body: jsonEncode({'email': email, 'password': password, 'name': name}),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return jsonDecode(response.body);
+      final data = jsonDecode(response.body);
+      final prefs = await SharedPreferences.getInstance();
+      final user = data['user'];
+      if (user is Map && user['name'] != null) {
+        await prefs.setString('user_name', user['name'].toString());
+      }
+      return data;
     }
     throw Exception(_formatError(response, 'Register failed'));
   }
@@ -51,6 +57,10 @@ class ApiService {
       final data = jsonDecode(response.body);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', data['token']);
+      final user = data['user'];
+      if (user is Map && user['name'] != null) {
+        await prefs.setString('user_name', user['name'].toString());
+      }
       return data;
     }
     throw Exception(_formatError(response, 'Login failed'));
