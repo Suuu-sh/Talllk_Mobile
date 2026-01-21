@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
@@ -67,9 +68,9 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.orange.shade50,
-              Colors.white,
-              Colors.orange.shade100,
+              AppColors.orange50,
+              AppColors.white,
+              AppColors.orange100,
             ],
           ),
         ),
@@ -83,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.orange.shade500, width: 2),
+                      border: Border.all(color: AppColors.orange500, width: 2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -91,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w300,
-                        color: Colors.orange.shade600,
+                        color: AppColors.orange600,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -101,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     '会話の準備をサポート',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade600,
+                      color: AppColors.grey600,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -122,8 +123,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: ElevatedButton(
                                     onPressed: () => setState(() => _isLogin = true),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: _isLogin ? Colors.orange : Colors.grey.shade200,
-                                      foregroundColor: _isLogin ? Colors.white : Colors.grey.shade600,
+                                      backgroundColor:
+                                          _isLogin ? AppColors.orange500 : AppColors.grey200,
+                                      foregroundColor:
+                                          _isLogin ? AppColors.white : AppColors.grey600,
                                       elevation: _isLogin ? 4 : 0,
                                     ),
                                     child: const Text('ログイン'),
@@ -134,8 +137,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: ElevatedButton(
                                     onPressed: () => setState(() => _isLogin = false),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: !_isLogin ? Colors.orange : Colors.grey.shade200,
-                                      foregroundColor: !_isLogin ? Colors.white : Colors.grey.shade600,
+                                      backgroundColor:
+                                          !_isLogin ? AppColors.orange500 : AppColors.grey200,
+                                      foregroundColor:
+                                          !_isLogin ? AppColors.white : AppColors.grey600,
                                       elevation: !_isLogin ? 4 : 0,
                                     ),
                                     child: const Text('新規登録'),
@@ -148,13 +153,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.shade50,
+                                  color: AppColors.red50,
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.red.shade200),
+                                  border: Border.all(color: AppColors.red200),
                                 ),
                                 child: Text(
                                   _errorMessage!,
-                                  style: TextStyle(color: Colors.red.shade700),
+                                  style: TextStyle(color: AppColors.red700),
                                 ),
                               ),
                             if (_errorMessage != null) const SizedBox(height: 16),
@@ -197,11 +202,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: ElevatedButton(
                                 onPressed: _isLoading ? null : _submit,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: AppColors.orange500,
+                                  foregroundColor: AppColors.white,
                                 ),
                                 child: _isLoading
-                                    ? const CircularProgressIndicator(color: Colors.white)
+                                    ? const CircularProgressIndicator(color: AppColors.white)
                                     : Text(_isLogin ? 'ログイン' : '登録する'),
                               ),
                             ),
@@ -215,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     '面接、デート、会議などの準備に最適',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade600,
+                      color: AppColors.grey600,
                     ),
                   ),
                 ],

@@ -4,6 +4,7 @@ import 'dashboard_screen.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'search_screen.dart';
 import 'shuffle_screen.dart';
+import '../theme/app_colors.dart';
 
 class TopicDetailScreen extends StatefulWidget {
   final int situationId;
@@ -185,7 +186,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.black12,
+                  color: AppColors.black12,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -225,7 +226,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text('削除'),
           ),
         ],
@@ -300,19 +301,19 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                     Container(
                                       decoration: BoxDecoration(
                                         color: Theme.of(context).brightness == Brightness.dark
-                                            ? const Color(0xFF151515)
-                                            : Colors.white,
+                                            ? AppColors.darkSurface
+                                            : AppColors.white,
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
                                           color: Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white12
-                                              : Colors.black12,
+                                              ? AppColors.white12
+                                              : AppColors.black12,
                                         ),
                                         boxShadow: Theme.of(context).brightness == Brightness.dark
                                             ? []
                                             : [
                                                 BoxShadow(
-                                                  color: Colors.black.withValues(alpha: 0.06),
+                                                  color: AppColors.black.withOpacity(0.06),
                                                   blurRadius: 16,
                                                   offset: const Offset(0, 8),
                                                 ),
@@ -325,7 +326,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                           return Column(
                                             children: [
                                               Material(
-                                                color: Colors.transparent,
+                                                color: AppColors.transparent,
                                                 child: InkWell(
                                                   onTap: () {
                                                     Navigator.push(
@@ -351,14 +352,12 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                           width: 28,
                                                           height: 28,
                                                           decoration: BoxDecoration(
-                                                            color: Colors.orange.withValues(
-                                                              alpha: 0.18,
-                                                            ),
+                                                            color: AppColors.orange500.withOpacity(0.18),
                                                             borderRadius: BorderRadius.circular(10),
                                                           ),
                                                           child: Icon(
                                                             Icons.folder_outlined,
-                                                            color: Colors.orange.shade600,
+                                                            color: AppColors.orange600,
                                                             size: 15,
                                                           ),
                                                         ),
@@ -388,8 +387,8 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                   thickness: 1,
                                                   color:
                                                       Theme.of(context).brightness == Brightness.dark
-                                                          ? Colors.white12
-                                                          : Colors.black12,
+                                                          ? AppColors.white12
+                                                          : AppColors.black12,
                                                 ),
                                             ],
                                           );
@@ -413,7 +412,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                         Icon(
                                           Icons.help_outline,
                                           size: 64,
-                                          color: Colors.grey.shade400,
+                                          color: AppColors.grey400,
                                         ),
                                         const SizedBox(height: 16),
                                         const Text(
@@ -444,23 +443,23 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                     return Container(
                                       margin: const EdgeInsets.only(bottom: 8),
                                       decoration: BoxDecoration(
-                                        color: isDark ? const Color(0xFF151515) : Colors.white,
+                                        color: isDark ? AppColors.darkSurface : AppColors.white,
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
-                                          color: isDark ? Colors.white12 : Colors.black12,
+                                          color: isDark ? AppColors.white12 : AppColors.black12,
                                         ),
                                         boxShadow: isDark
                                             ? []
                                             : [
                                                 BoxShadow(
-                                                  color: Colors.black.withValues(alpha: 0.06),
+                                                  color: AppColors.black.withOpacity(0.06),
                                                   blurRadius: 16,
                                                   offset: const Offset(0, 8),
                                                 ),
                                               ],
                                       ),
                                       child: Material(
-                                        color: Colors.transparent,
+                                        color: AppColors.transparent,
                                         child: InkWell(
                                           onTap: () {
                                             setState(() {
@@ -484,12 +483,12 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                       width: 28,
                                                       height: 28,
                                                       decoration: BoxDecoration(
-                                                        color: Colors.orange.withValues(alpha: 0.18),
+                                                        color: AppColors.orange500.withOpacity(0.18),
                                                         borderRadius: BorderRadius.circular(10),
                                                       ),
                                                       child: Icon(
                                                         Icons.help_outline,
-                                                        color: Colors.orange.shade600,
+                                                        color: AppColors.orange600,
                                                         size: 15,
                                                       ),
                                                     ),
@@ -522,11 +521,11 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                           value: 'delete',
                                                           child: Row(
                                                             children: [
-                                                              Icon(Icons.delete,
-                                                                  size: 20, color: Colors.red),
+                                                            Icon(Icons.delete,
+                                                                size: 20, color: AppColors.error),
                                                               SizedBox(width: 8),
                                                               Text('削除',
-                                                                  style: TextStyle(color: Colors.red)),
+                                                                  style: TextStyle(color: AppColors.error)),
                                                             ],
                                                           ),
                                                         ),
@@ -548,15 +547,15 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                     padding: const EdgeInsets.all(12),
                                                     decoration: BoxDecoration(
                                                       color: isDark
-                                                          ? const Color(0xFF111111)
-                                                          : const Color(0xFF1B1B1B),
+                                                          ? AppColors.darkAnswer
+                                                          : AppColors.darkAnswerAlt,
                                                       borderRadius: BorderRadius.circular(12),
                                                     ),
                                                     child: Text(
                                                       question['answer'] ?? '（未回答）',
                                                       style: const TextStyle(
                                                         height: 1.5,
-                                                        color: Colors.white,
+                                                        color: AppColors.white,
                                                       ),
                                                     ),
                                                   ),

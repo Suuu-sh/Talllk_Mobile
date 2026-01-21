@@ -7,6 +7,7 @@ import 'topic_detail_screen.dart';
 import 'shuffle_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/app_bottom_nav.dart';
+import '../theme/app_colors.dart';
 
 class DashboardScreen extends StatefulWidget {
   final int initialTabIndex;
@@ -165,7 +166,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context, true),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
                       child: const Text('削除'),
                     ),
                   ],
@@ -361,16 +362,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   width: 140,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF151515) : const Color(0xFFF3F4F6),
+                    color: isDark ? AppColors.darkSurface : AppColors.lightSecondary,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: isDark ? Colors.white10 : Colors.black12,
+                      color: isDark ? AppColors.white10 : AppColors.black12,
                     ),
                     boxShadow: isDark
                         ? []
                         : [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.06),
+                              color: AppColors.black.withOpacity(0.06),
                               blurRadius: 12,
                               offset: const Offset(0, 6),
                             ),
@@ -379,7 +380,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.description_outlined, color: Colors.orange.shade500, size: 18),
+                      Icon(Icons.description_outlined, color: AppColors.orange500, size: 18),
                       const Spacer(),
                       Text(
                         situation['title'],
@@ -508,7 +509,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Icon(
               Icons.chat_bubble_outline,
               size: 64,
-              color: Colors.orange.shade600,
+              color: AppColors.orange600,
             ),
             const SizedBox(height: 16),
             const Text(
@@ -531,19 +532,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF151515)
-            : Colors.white,
+            ? AppColors.darkSurface
+            : AppColors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white12
-              : Colors.black12,
+              ? AppColors.white12
+              : AppColors.black12,
         ),
         boxShadow: Theme.of(context).brightness == Brightness.dark
             ? []
             : [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: AppColors.black.withOpacity(0.06),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -551,40 +552,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       child: Column(
         children: List.generate(_situations.length, (index) {
-          final situation = _situations[index];
-          final isLast = index == _situations.length - 1;
-          return Column(
-            children: [
-              Slidable(
-                key: ValueKey(situation['id']),
-                endActionPane: ActionPane(
-                  motion: const StretchMotion(),
-                  extentRatio: 0.42,
-                  children: [
-                    SlidableAction(
-                      onPressed: (_) {
-                        _showEditSituationDialog(situation);
-                      },
-                      backgroundColor: Colors.orange.shade50,
-                      foregroundColor: Colors.orange.shade700,
-                      icon: Icons.edit_outlined,
-                      label: '編集',
-                      borderRadius: BorderRadius.circular(16),
+        final situation = _situations[index];
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final isLast = index == _situations.length - 1;
+        return Column(
+          children: [
+            Slidable(
+              key: ValueKey(situation['id']),
+              endActionPane: ActionPane(
+                motion: const StretchMotion(),
+                extentRatio: 0.25,
+                children: [
+                  CustomSlidableAction(
+                    onPressed: (_) {
+                      _showEditSituationDialog(situation);
+                    },
+                    backgroundColor: AppColors.transparent,
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: isDark
+                              ? [AppColors.primaryLight, AppColors.primary]
+                              : [AppColors.primaryLight, AppColors.primary],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.25),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.edit_rounded,
+                          color: AppColors.white,
+                          size: 18,
+                        ),
+                      ),
                     ),
-                    SlidableAction(
-                      onPressed: (_) {
-                        // TODO: toggle favorite
-                      },
-                      backgroundColor: Colors.orange.shade600,
-                      foregroundColor: Colors.white,
-                      icon: Icons.star_outline,
-                      label: 'お気に入り',
-                      borderRadius: BorderRadius.circular(16),
+                  ),
+                  CustomSlidableAction(
+                    onPressed: (_) {
+                      // TODO: toggle favorite
+                    },
+                    backgroundColor: AppColors.transparent,
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: isDark
+                              ? [AppColors.orangeUi500, AppColors.orangeUi600]
+                              : [AppColors.orangeUi500, AppColors.orangeUi600],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.orangeUi600.withOpacity(0.25),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.star_rounded,
+                          color: AppColors.white,
+                          size: 18,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
                 child: Material(
-                  color: Colors.transparent,
+                  color: AppColors.transparent,
                   child: InkWell(
                     onTap: () {
                       _recordRecentSituation(situation['id']);
@@ -608,12 +658,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             width: 28,
                             height: 28,
                             decoration: BoxDecoration(
-                              color: Colors.orange.withValues(alpha: 0.18),
+                              color: AppColors.orange500.withOpacity(0.18),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
                               Icons.folder_outlined,
-                              color: Colors.orange.shade600,
+                              color: AppColors.orange600,
                               size: 15,
                             ),
                           ),
@@ -644,8 +694,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 1,
                   thickness: 1,
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white12
-                      : Colors.black12,
+                      ? AppColors.white12
+                      : AppColors.black12,
                 ),
             ],
           );
@@ -677,8 +727,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       drawer: Drawer(
         width: MediaQuery.of(context).size.width * 0.78,
         backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF0B0B0B)
-            : Colors.white,
+            ? AppColors.darkDrawer
+            : AppColors.white,
         child: const ProfileDrawer(),
       ),
       body: _isLoading
@@ -764,8 +814,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               height: 30,
                                               decoration: BoxDecoration(
                                                 color: Theme.of(context).brightness == Brightness.dark
-                                                    ? Colors.white10
-                                                    : Colors.black12,
+                                                    ? AppColors.white10
+                                                    : AppColors.black12,
                                                 borderRadius: BorderRadius.circular(14),
                                               ),
                                               child: const Icon(Icons.person_outline, size: 16),
@@ -779,7 +829,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             ),
                                             decoration: BoxDecoration(
                                               border: Border.all(
-                                                color: Colors.orange.shade600,
+                                                color: AppColors.orange600,
                                                 width: 1.5,
                                               ),
                                               borderRadius: BorderRadius.circular(6),
@@ -789,7 +839,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w800,
-                                                color: Colors.orange.shade600,
+                                                color: AppColors.orange600,
                                                 letterSpacing: 0.5,
                                               ),
                                             ),
@@ -803,8 +853,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               height: 28,
                                               decoration: BoxDecoration(
                                                 color: Theme.of(context).brightness == Brightness.dark
-                                                    ? Colors.white10
-                                                    : Colors.black12,
+                                                    ? AppColors.white10
+                                                    : AppColors.black12,
                                                 borderRadius: BorderRadius.circular(14),
                                               ),
                                               child: const Icon(Icons.search, size: 15),
@@ -829,8 +879,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(
                           fontSize: 11,
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white54
-                              : Colors.black45,
+                              ? AppColors.white54
+                              : AppColors.black45,
                         ),
                               ),
                             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
@@ -38,8 +39,8 @@ class _SplashScreenState extends State<SplashScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.orange.shade50,
-              Colors.orange.shade100,
+              AppColors.orange50,
+              AppColors.orange100,
             ],
           ),
         ),
@@ -50,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.orange.shade500, width: 2),
+                  border: Border.all(color: AppColors.orange500, width: 2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -58,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.w300,
-                    color: Colors.orange.shade600,
+                    color: AppColors.orange600,
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -69,11 +70,11 @@ class _SplashScreenState extends State<SplashScreen> {
                 style: TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.w300,
-                  color: Colors.orange.shade600,
+                  color: AppColors.orange600,
                 ),
               ),
               const SizedBox(height: 32),
-              const CircularProgressIndicator(color: Colors.orange),
+              const CircularProgressIndicator(color: AppColors.orange500),
             ],
           ),
         ),

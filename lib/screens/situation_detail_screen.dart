@@ -6,6 +6,7 @@ import 'dashboard_screen.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'search_screen.dart';
 import 'shuffle_screen.dart';
+import '../theme/app_colors.dart';
 
 class SituationDetailScreen extends StatefulWidget {
   final int situationId;
@@ -69,7 +70,7 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.black12,
+                  color: AppColors.black12,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -243,7 +244,7 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text('削除'),
           ),
         ],
@@ -361,7 +362,7 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                   Icon(
                                     Icons.chat_bubble_outline,
                                     size: 64,
-                                    color: Colors.orange.shade600,
+                                    color: AppColors.orange600,
                                   ),
                                   const SizedBox(height: 16),
                                   const Text(
@@ -387,19 +388,19 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                             Container(
                               decoration: BoxDecoration(
                                 color: Theme.of(context).brightness == Brightness.dark
-                                    ? const Color(0xFF151515)
-                                    : Colors.white,
+                                    ? AppColors.darkSurface
+                                    : AppColors.white,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.white12
-                                      : Colors.black12,
+                                      ? AppColors.white12
+                                      : AppColors.black12,
                                 ),
                                 boxShadow: Theme.of(context).brightness == Brightness.dark
                                     ? []
                                     : [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.06),
+                                          color: AppColors.black.withOpacity(0.06),
                                           blurRadius: 16,
                                           offset: const Offset(0, 8),
                                         ),
@@ -419,22 +420,22 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                           children: [
                                             SlidableAction(
                                               onPressed: (_) => _showEditTopicDialog(topic),
-                                              backgroundColor: Colors.orange.shade600,
-                                              foregroundColor: Colors.white,
+                                              backgroundColor: AppColors.orange600,
+                                              foregroundColor: AppColors.white,
                                               icon: Icons.edit,
                                               label: '編集',
                                             ),
                                             SlidableAction(
                                               onPressed: (_) => _deleteTopic(topic['id']),
-                                              backgroundColor: Colors.red.shade600,
-                                              foregroundColor: Colors.white,
+                                              backgroundColor: AppColors.error,
+                                              foregroundColor: AppColors.white,
                                               icon: Icons.delete,
                                               label: '削除',
                                             ),
                                           ],
                                         ),
                                         child: Material(
-                                          color: Colors.transparent,
+                                          color: AppColors.transparent,
                                           child: InkWell(
                                             onTap: () {
                                               Navigator.push(
@@ -460,12 +461,12 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                                     width: 28,
                                                     height: 28,
                                                     decoration: BoxDecoration(
-                                                      color: Colors.orange.withValues(alpha: 0.18),
+                                                      color: AppColors.orange500.withOpacity(0.18),
                                                       borderRadius: BorderRadius.circular(12),
                                                     ),
                                                     child: Icon(
                                                       Icons.folder_outlined,
-                                                      color: Colors.orange.shade600,
+                                                      color: AppColors.orange600,
                                                       size: 15,
                                                     ),
                                                   ),
@@ -494,8 +495,8 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                           height: 1,
                                           thickness: 1,
                                           color: Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white12
-                                              : Colors.black12,
+                                              ? AppColors.white12
+                                              : AppColors.black12,
                                         ),
                                     ],
                                   );

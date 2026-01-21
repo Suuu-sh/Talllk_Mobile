@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class AppBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -22,16 +23,16 @@ class AppBottomNav extends StatelessWidget {
             return Container(
               height: 58,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF151515) : Colors.white,
+                color: isDark ? AppColors.darkSurface : AppColors.white,
                 borderRadius: BorderRadius.circular(26),
                 border: Border.all(
-                  color: isDark ? Colors.white12 : Colors.black12,
+                  color: isDark ? AppColors.white12 : AppColors.black12,
                 ),
                 boxShadow: isDark
                     ? []
                     : [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
+                          color: AppColors.black.withOpacity(0.08),
                           blurRadius: 16,
                           offset: const Offset(0, 8),
                         ),
@@ -43,8 +44,8 @@ class AppBottomNav extends StatelessWidget {
                     children: List.generate(itemCount, (index) {
                       final isActive = selectedIndex == index;
                       final iconColor = isActive
-                          ? Colors.orange.shade600
-                          : (isDark ? Colors.white70 : Colors.black54);
+                          ? AppColors.orange600
+                          : (isDark ? AppColors.white70 : AppColors.black54);
                       return Expanded(
                         child: InkWell(
                           borderRadius: BorderRadius.circular(20),

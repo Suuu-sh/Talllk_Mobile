@@ -7,6 +7,7 @@ import 'dashboard_screen.dart';
 import 'situation_detail_screen.dart';
 import 'topic_detail_screen.dart';
 import 'shuffle_screen.dart';
+import '../theme/app_colors.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -280,7 +281,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   '検索結果 ${_situationMatches.length + _topicMatches.length + _questionMatches.length} 件',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? Colors.white54 : Colors.black45,
+                    color: isDark ? AppColors.white54 : AppColors.black45,
                   ),
                 ),
               ),

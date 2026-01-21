@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dashboard_screen.dart';
 import 'profile_screen.dart';
+import '../theme/app_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -55,10 +56,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF151515) : Colors.white,
+          color: isDark ? AppColors.darkSurface : AppColors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: AppColors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -113,8 +114,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         ),
         decoration: BoxDecoration(
           color: isActive
-              ? (isDark ? Colors.blue.withOpacity(0.2) : Colors.blue.withOpacity(0.1))
-              : Colors.transparent,
+              ? (isDark
+                  ? AppColors.primary.withOpacity(0.2)
+                  : AppColors.primary.withOpacity(0.1))
+              : AppColors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -126,8 +129,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 isActive ? activeIcon : icon,
                 key: ValueKey(isActive),
                 color: isActive
-                    ? Colors.blue
-                    : (isDark ? Colors.white60 : Colors.black54),
+                    ? AppColors.primary
+                    : (isDark ? AppColors.white60 : AppColors.black54),
                 size: 24,
               ),
             ),
@@ -141,7 +144,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                         Text(
                           label,
                           style: const TextStyle(
-                            color: Colors.blue,
+                            color: AppColors.primary,
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                           ),

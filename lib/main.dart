@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'theme/app_colors.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/splash_screen.dart';
@@ -27,36 +28,36 @@ class TalllkApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const lightScaffold = Color(0xFFFAFAFA);
-    const darkScaffold = Color(0xFF0A0A0A);
-    const darkSurface = Color(0xFF151515);
-    const darkCard = Color(0xFF1A1A1A);
+    const lightScaffold = AppColors.lightScaffold;
+    const darkScaffold = AppColors.darkScaffold;
+    const darkSurface = AppColors.darkSurface;
+    const darkCard = AppColors.darkCard;
     
     // Modern color scheme - Blue/Purple gradient
-    final lightScheme = ColorScheme.light(
-      primary: const Color(0xFF6366F1), // Indigo
-      secondary: const Color(0xFF8B5CF6), // Purple
-      tertiary: const Color(0xFF06B6D4), // Cyan
-      surface: Colors.white,
-      background: lightScaffold,
-      error: const Color(0xFFEF4444),
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
-      onSurface: const Color(0xFF1F2937),
-      onBackground: const Color(0xFF1F2937),
+    final lightScheme = const ColorScheme.light(
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
+      tertiary: AppColors.tertiary,
+      surface: AppColors.white,
+      background: AppColors.lightScaffold,
+      error: AppColors.error,
+      onPrimary: AppColors.white,
+      onSecondary: AppColors.white,
+      onSurface: AppColors.lightBodyText,
+      onBackground: AppColors.lightBodyText,
     );
     
-    final darkScheme = ColorScheme.dark(
-      primary: const Color(0xFF818CF8), // Light Indigo
-      secondary: const Color(0xFFA78BFA), // Light Purple
-      tertiary: const Color(0xFF22D3EE), // Light Cyan
-      surface: darkSurface,
-      background: darkScaffold,
-      error: const Color(0xFFF87171),
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
-      onSurface: const Color(0xFFF9FAFB),
-      onBackground: const Color(0xFFF9FAFB),
+    final darkScheme = const ColorScheme.dark(
+      primary: AppColors.primaryLight,
+      secondary: AppColors.secondaryLight,
+      tertiary: AppColors.tertiaryLight,
+      surface: AppColors.darkSurface,
+      background: AppColors.darkScaffold,
+      error: AppColors.errorLight,
+      onPrimary: AppColors.white,
+      onSecondary: AppColors.white,
+      onSurface: AppColors.darkBodyText,
+      onBackground: AppColors.darkBodyText,
     );
 
     return Consumer<ThemeProvider>(
@@ -70,8 +71,8 @@ class TalllkApp extends StatelessWidget {
             scaffoldBackgroundColor: lightScaffold,
             textTheme: GoogleFonts.interTextTheme(
               ThemeData.light().textTheme.apply(
-                bodyColor: const Color(0xFF1F2937),
-                displayColor: const Color(0xFF111827),
+                bodyColor: AppColors.lightBodyText,
+                displayColor: AppColors.lightText,
               ),
             ).copyWith(
               bodyLarge: GoogleFonts.inter(fontWeight: FontWeight.w300),
@@ -82,29 +83,29 @@ class TalllkApp extends StatelessWidget {
               labelSmall: GoogleFonts.inter(fontWeight: FontWeight.w300),
             ),
             appBarTheme: AppBarTheme(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF111827),
+              backgroundColor: AppColors.white,
+              foregroundColor: AppColors.lightText,
               elevation: 0,
-              surfaceTintColor: Colors.transparent,
+              surfaceTintColor: AppColors.transparent,
               titleTextStyle: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w300,
-                color: const Color(0xFF111827),
+                color: AppColors.lightText,
               ),
             ),
             cardTheme: CardThemeData(
-              color: Colors.white,
+              color: AppColors.white,
               elevation: 0,
-              shadowColor: Colors.black.withOpacity(0.05),
+              shadowColor: AppColors.black.withOpacity(0.05),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: Colors.grey.shade200, width: 1),
+                side: const BorderSide(color: AppColors.grey200, width: 1),
               ),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6366F1),
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 textStyle: GoogleFonts.inter(
@@ -118,7 +119,7 @@ class TalllkApp extends StatelessWidget {
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF6366F1),
+                foregroundColor: AppColors.primary,
                 textStyle: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w300,
@@ -126,29 +127,29 @@ class TalllkApp extends StatelessWidget {
               ),
             ),
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: Color(0xFF6366F1),
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
               elevation: 2,
             ),
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
-              fillColor: Colors.white,
+              fillColor: AppColors.white,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: const BorderSide(color: AppColors.grey300),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: const BorderSide(color: AppColors.grey300),
               ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
-                borderSide: BorderSide(color: Color(0xFF6366F1), width: 2),
+                borderSide: BorderSide(color: AppColors.primary, width: 2),
               ),
               labelStyle: GoogleFonts.inter(
                 fontSize: 14,
-                color: const Color(0xFF6B7280),
+                color: AppColors.lightMutedText,
               ),
             ),
           ),
@@ -158,8 +159,8 @@ class TalllkApp extends StatelessWidget {
             scaffoldBackgroundColor: darkScaffold,
             textTheme: GoogleFonts.interTextTheme(
               ThemeData.dark().textTheme.apply(
-                bodyColor: const Color(0xFFF9FAFB),
-                displayColor: const Color(0xFFFFFFFF),
+                bodyColor: AppColors.darkBodyText,
+                displayColor: AppColors.white,
               ),
             ).copyWith(
               bodyLarge: GoogleFonts.inter(fontWeight: FontWeight.w300),
@@ -171,28 +172,28 @@ class TalllkApp extends StatelessWidget {
             ),
             appBarTheme: AppBarTheme(
               backgroundColor: darkScaffold,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.white,
               elevation: 0,
-              surfaceTintColor: Colors.transparent,
+              surfaceTintColor: AppColors.transparent,
               titleTextStyle: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w300,
-                color: Colors.white,
+                color: AppColors.white,
               ),
             ),
             cardTheme: CardThemeData(
               color: darkCard,
               elevation: 0,
-              shadowColor: Colors.transparent,
+              shadowColor: AppColors.transparent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
+                side: BorderSide(color: AppColors.white.withOpacity(0.1), width: 1),
               ),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF818CF8),
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primaryLight,
+                foregroundColor: AppColors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 textStyle: GoogleFonts.inter(
@@ -206,7 +207,7 @@ class TalllkApp extends StatelessWidget {
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF818CF8),
+                foregroundColor: AppColors.primaryLight,
                 textStyle: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w300,
@@ -214,8 +215,8 @@ class TalllkApp extends StatelessWidget {
               ),
             ),
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: Color(0xFF818CF8),
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primaryLight,
+              foregroundColor: AppColors.white,
               elevation: 2,
             ),
             inputDecorationTheme: InputDecorationTheme(
@@ -224,19 +225,19 @@ class TalllkApp extends StatelessWidget {
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+                borderSide: BorderSide(color: AppColors.white.withOpacity(0.1)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+                borderSide: BorderSide(color: AppColors.white.withOpacity(0.1)),
               ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
-                borderSide: BorderSide(color: Color(0xFF818CF8), width: 2),
+                borderSide: BorderSide(color: AppColors.primaryLight, width: 2),
               ),
               labelStyle: GoogleFonts.inter(
                 fontSize: 14,
-                color: const Color(0xFF9CA3AF),
+                color: AppColors.darkMutedText,
               ),
             ),
           ),

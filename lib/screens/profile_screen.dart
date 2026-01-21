@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
+import '../theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -11,14 +12,14 @@ class ProfileScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF191919) : const Color(0xFFFAFAFA),
+      backgroundColor: isDark ? AppColors.darkSheet : AppColors.lightScaffold,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 120,
             floating: false,
             pinned: true,
-            backgroundColor: isDark ? const Color(0xFF191919) : Colors.white,
+            backgroundColor: isDark ? AppColors.darkSheet : AppColors.white,
             elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
@@ -27,7 +28,7 @@ class ProfileScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w300,
-                  color: isDark ? Colors.white : Colors.black87,
+                  color: isDark ? AppColors.white : AppColors.lightText,
                 ),
               ),
             ),
@@ -42,14 +43,14 @@ class ProfileScreen extends StatelessWidget {
                     height: 100,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.blue.shade500, Colors.purple.shade600],
+                        colors: [AppColors.primary, AppColors.secondary],
                       ),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.person,
                       size: 50,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -58,7 +59,7 @@ class ProfileScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w300,
-                      color: isDark ? Colors.white : Colors.black87,
+                      color: isDark ? AppColors.white : AppColors.lightText,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -74,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
                             Text(
                               themeProvider.isDarkMode ? 'ダーク' : 'ライト',
                               style: TextStyle(
-                                color: isDark ? Colors.white60 : Colors.black54,
+                                color: isDark ? AppColors.white60 : AppColors.black54,
                                 fontSize: 12,
                               ),
                             ),
@@ -96,7 +97,7 @@ class ProfileScreen extends StatelessWidget {
                     trailing: Text(
                       '1.0.0',
                       style: TextStyle(
-                        color: isDark ? Colors.white60 : Colors.black54,
+                        color: isDark ? AppColors.white60 : AppColors.black54,
                         fontSize: 12,
                       ),
                     ),
@@ -112,8 +113,8 @@ class ProfileScreen extends StatelessWidget {
                       icon: const Icon(Icons.logout),
                       label: const Text('ログアウト'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.error,
+                        foregroundColor: AppColors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ),
@@ -138,17 +139,17 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF151515) : Colors.white,
+        color: isDark ? AppColors.darkSurface : AppColors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade200,
+          color: isDark ? AppColors.white.withOpacity(0.05) : AppColors.grey200,
         ),
       ),
       child: Row(
         children: [
           Icon(
             icon,
-            color: isDark ? Colors.white70 : Colors.black54,
+            color: isDark ? AppColors.white70 : AppColors.black54,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -157,7 +158,7 @@ class ProfileScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: isDark ? Colors.white : Colors.black87,
+                color: isDark ? AppColors.white : AppColors.lightText,
               ),
             ),
           ),
@@ -174,9 +175,9 @@ class ProfileDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background = isDark ? const Color(0xFF0B0B0B) : Colors.white;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final subTextColor = isDark ? Colors.white60 : Colors.black54;
+    final background = isDark ? AppColors.darkDrawer : AppColors.white;
+    final textColor = isDark ? AppColors.white : AppColors.lightText;
+    final subTextColor = isDark ? AppColors.white60 : AppColors.black54;
 
     return Container(
       color: background,
@@ -188,8 +189,8 @@ class ProfileDrawer extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 26,
-                  backgroundColor: Colors.orange.shade400,
-                  child: const Icon(Icons.person, color: Colors.white),
+                  backgroundColor: AppColors.orange400,
+                  child: const Icon(Icons.person, color: AppColors.white),
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -267,8 +268,8 @@ class ProfileDrawer extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final iconColor = isDark ? Colors.white70 : Colors.black54;
+    final textColor = isDark ? AppColors.white : AppColors.lightText;
+    final iconColor = isDark ? AppColors.white70 : AppColors.black54;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: iconColor),
@@ -294,7 +295,7 @@ class ProfileDrawer extends StatelessWidget {
             return ListTile(
               leading: Icon(
                 themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                color: Colors.orange,
+                color: AppColors.orange500,
               ),
               title: const Text('テーマ'),
               subtitle: Text(themeProvider.isDarkMode ? 'ダーク' : 'ライト'),
