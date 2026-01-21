@@ -130,7 +130,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 key: ValueKey(isActive),
                 color: isActive
                     ? AppColors.primary
-                    : (isDark ? AppColors.white60 : AppColors.black54),
+                    : (isDark ? AppColors.white60 : AppColors.black60),
                 size: 24,
               ),
             ),

@@ -891,8 +891,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(
                           fontSize: 11,
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.white54
-                              : AppColors.black45,
+                              ? AppColors.white60
+                              : AppColors.black60,
                         ),
                               ),
                             ],

@@ -412,7 +412,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                         Icon(
                                           Icons.help_outline,
                                           size: 64,
-                                          color: AppColors.grey400,
+                                          color: AppColors.grey600,
                                         ),
                                         const SizedBox(height: 16),
                                         const Text(
@@ -548,14 +548,21 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                     decoration: BoxDecoration(
                                                       color: isDark
                                                           ? AppColors.darkAnswer
-                                                          : AppColors.darkAnswerAlt,
+                                                          : AppColors.lightAnswer,
                                                       borderRadius: BorderRadius.circular(12),
+                                                      border: Border.all(
+                                                        color: isDark
+                                                            ? AppColors.white12
+                                                            : AppColors.black12,
+                                                      ),
                                                     ),
                                                     child: Text(
                                                       question['answer'] ?? '（未回答）',
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                         height: 1.5,
-                                                        color: AppColors.white,
+                                                        color: isDark
+                                                            ? AppColors.white
+                                                            : AppColors.black,
                                                       ),
                                                     ),
                                                   ),

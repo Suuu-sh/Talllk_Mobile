@@ -45,7 +45,7 @@ class AppBottomNav extends StatelessWidget {
                       final isActive = selectedIndex == index;
                       final iconColor = isActive
                           ? AppColors.orange600
-                          : (isDark ? AppColors.white70 : AppColors.black54);
+                          : (isDark ? AppColors.white60 : AppColors.black60);
                       return Expanded(
                         child: InkWell(
                           borderRadius: BorderRadius.circular(20),

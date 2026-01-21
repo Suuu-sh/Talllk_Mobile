@@ -75,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
                             Text(
                               themeProvider.isDarkMode ? 'ダーク' : 'ライト',
                               style: TextStyle(
-                                color: isDark ? AppColors.white60 : AppColors.black54,
+                                color: isDark ? AppColors.white60 : AppColors.black60,
                                 fontSize: 12,
                               ),
                             ),
@@ -97,7 +97,7 @@ class ProfileScreen extends StatelessWidget {
                     trailing: Text(
                       '1.0.0',
                       style: TextStyle(
-                        color: isDark ? AppColors.white60 : AppColors.black54,
+                        color: isDark ? AppColors.white60 : AppColors.black60,
                         fontSize: 12,
                       ),
                     ),
@@ -149,7 +149,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: isDark ? AppColors.white70 : AppColors.black54,
+            color: isDark ? AppColors.white60 : AppColors.black60,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -177,7 +177,7 @@ class ProfileDrawer extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final background = isDark ? AppColors.darkDrawer : AppColors.white;
     final textColor = isDark ? AppColors.white : AppColors.lightText;
-    final subTextColor = isDark ? AppColors.white60 : AppColors.black54;
+    final subTextColor = isDark ? AppColors.white60 : AppColors.black60;
 
     return Container(
       color: background,
@@ -269,7 +269,7 @@ class ProfileDrawer extends StatelessWidget {
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? AppColors.white : AppColors.lightText;
-    final iconColor = isDark ? AppColors.white70 : AppColors.black54;
+    final iconColor = isDark ? AppColors.white60 : AppColors.black60;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: iconColor),

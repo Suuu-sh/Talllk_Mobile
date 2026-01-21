@@ -281,7 +281,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   '検索結果 ${_situationMatches.length + _topicMatches.length + _questionMatches.length} 件',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? AppColors.white54 : AppColors.black45,
+                    color: isDark ? AppColors.white60 : AppColors.black60,
                   ),
                 ),
               ),
