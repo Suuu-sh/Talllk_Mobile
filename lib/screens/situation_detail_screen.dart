@@ -6,6 +6,7 @@ import 'dashboard_screen.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'search_screen.dart';
 import 'shuffle_screen.dart';
+import '../widgets/list_card.dart';
 import '../theme/app_colors.dart';
 
 class SituationDetailScreen extends StatefulWidget {
@@ -385,6 +386,11 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                       : ListView(
                           padding: const EdgeInsets.all(16),
                           children: [
+                            const Text(
+                              'トピック',
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                            ),
+                            const SizedBox(height: 8),
                             Container(
                               decoration: BoxDecoration(
                                 color: Theme.of(context).brightness == Brightness.dark
@@ -434,60 +440,19 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                                             ),
                                           ],
                                         ),
-                                        child: Material(
-                                          color: AppColors.transparent,
-                                          child: InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => TopicDetailScreen(
-                                                    situationId: widget.situationId,
-                                                    topicId: topic['id'],
-                                                  ),
+                                        child: ListCard(
+                                          title: topic['title'],
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => TopicDetailScreen(
+                                                  situationId: widget.situationId,
+                                                  topicId: topic['id'],
                                                 ),
-                                              ).then((_) => _loadSituation());
-                                            },
-                                            borderRadius: BorderRadius.circular(16),
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 16,
-                                                vertical: 6,
                                               ),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: [
-                                                  Container(
-                                                    width: 28,
-                                                    height: 28,
-                                                    decoration: BoxDecoration(
-                                                      color: AppColors.orange500.withOpacity(0.18),
-                                                      borderRadius: BorderRadius.circular(12),
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.folder_outlined,
-                                                      color: AppColors.orange600,
-                                                      size: 15,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child: Text(
-                                                      topic['title'],
-                                                      maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
-                                                        style: const TextStyle(
-                                                          fontWeight: FontWeight.w400,
-                                                          fontSize: 14,
-                                                          height: 1.2,
-                                                        ),
-                                                    ),
-                                                  ),
-                                                  const Icon(Icons.chevron_right),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
+                                            ).then((_) => _loadSituation());
+                                          },
                                         ),
                                       ),
                                       if (!isLast)

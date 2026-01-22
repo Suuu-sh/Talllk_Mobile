@@ -4,6 +4,7 @@ import 'dashboard_screen.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'search_screen.dart';
 import 'shuffle_screen.dart';
+import '../widgets/list_card.dart';
 import '../theme/app_colors.dart';
 
 class TopicDetailScreen extends StatefulWidget {
@@ -296,7 +297,10 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (_childTopics.isNotEmpty) ...[
-                                    const Text('フォルダ'),
+                                    const Text(
+                                      'フォルダ',
+                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                                    ),
                                     const SizedBox(height: 8),
                                     Container(
                                       decoration: BoxDecoration(
@@ -325,61 +329,19 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                           final isLast = index == _childTopics.length - 1;
                                           return Column(
                                             children: [
-                                              Material(
-                                                color: AppColors.transparent,
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) => TopicDetailScreen(
-                                                          situationId: widget.situationId,
-                                                          topicId: child['id'],
-                                                        ),
+                                              ListCard(
+                                                title: child['title'] ?? '',
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => TopicDetailScreen(
+                                                        situationId: widget.situationId,
+                                                        topicId: child['id'],
                                                       ),
-                                                    ).then((_) => _loadTopic());
-                                                  },
-                                                  borderRadius: BorderRadius.circular(16),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(
-                                                      horizontal: 16,
-                                                      vertical: 6,
                                                     ),
-                                                    child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      children: [
-                                                        Container(
-                                                          width: 28,
-                                                          height: 28,
-                                                          decoration: BoxDecoration(
-                                                            color: AppColors.orange500.withOpacity(0.18),
-                                                            borderRadius: BorderRadius.circular(10),
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.folder_outlined,
-                                                            color: AppColors.orange600,
-                                                            size: 15,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(width: 12),
-                                                        Expanded(
-                                                          child: Text(
-                                                            child['title'] ?? '',
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
-                                                              style: const TextStyle(
-                                                                fontWeight: FontWeight.w400,
-                                                                fontSize: 14,
-                                                                height: 1.2,
-                                                              ),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(width: 8),
-                                                        const Icon(Icons.chevron_right),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
+                                                  ).then((_) => _loadTopic());
+                                                },
                                               ),
                                               if (!isLast)
                                                 Divider(
@@ -401,7 +363,10 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                 ],
                               ),
                               const SizedBox(height: 16),
-                              const Text('質問'),
+                              const Text(
+                                '質問',
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                              ),
                               const SizedBox(height: 8),
                               if (_topic!['questions']?.isEmpty ?? true)
                                 Center(

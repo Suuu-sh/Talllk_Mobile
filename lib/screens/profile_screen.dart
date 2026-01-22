@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
+import '../widgets/list_card.dart';
 import '../theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -215,7 +216,7 @@ class ProfileDrawer extends StatelessWidget {
                         return Text(
                           '@$handle',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 13,
                             fontWeight: FontWeight.w400,
                             color: AppColors.orange600,
                           ),
@@ -229,60 +230,87 @@ class ProfileDrawer extends StatelessWidget {
             
             // Menu Items
             Expanded(
-              child: ListView(
+              child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                children: [
-                  _drawerItem(
-                    context,
-                    icon: Icons.person_outline_rounded,
-                    label: 'プロフィール',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 2),
-                  _drawerItem(
-                    context,
-                    icon: Icons.palette_outlined,
-                    label: '外観',
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showThemeDialog(context);
-                    },
-                  ),
-                  const SizedBox(height: 2),
-                  _drawerItem(
-                    context,
-                    icon: Icons.settings_outlined,
-                    label: '設定',
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Divider(
-                      height: 1,
-                      color: isDark
-                          ? Colors.white.withOpacity(0.1)
-                          : Colors.black.withOpacity(0.1),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkSurface : AppColors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isDark ? AppColors.white12 : AppColors.black12,
                     ),
+                    boxShadow: isDark
+                        ? []
+                        : [
+                            BoxShadow(
+                              color: AppColors.black.withOpacity(0.06),
+                              blurRadius: 16,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                   ),
-                  const SizedBox(height: 12),
-                  _drawerItem(
-                    context,
-                    icon: Icons.logout_rounded,
-                    label: 'ログアウト',
-                    isDestructive: true,
-                    onTap: () {
-                      Provider.of<AuthProvider>(context, listen: false).logout();
-                      Navigator.of(context).pushReplacementNamed('/login');
-                    },
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    children: [
+                      _drawerItem(
+                        context,
+                        icon: Icons.person_outline_rounded,
+                        label: 'プロフィール',
+                        iconColor: AppColors.blue500,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                          );
+                        },
+                      ),
+                      Divider(
+                        height: 1,
+                        color: isDark ? AppColors.white12 : AppColors.black12,
+                      ),
+                      _drawerItem(
+                        context,
+                        icon: Icons.palette_outlined,
+                        label: '外観',
+                        iconColor: AppColors.purple500,
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showThemeDialog(context);
+                        },
+                      ),
+                      Divider(
+                        height: 1,
+                        color: isDark ? AppColors.white12 : AppColors.black12,
+                      ),
+                      _drawerItem(
+                        context,
+                        icon: Icons.settings_outlined,
+                        label: '設定',
+                        iconColor: AppColors.grey600,
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      Divider(
+                        height: 1,
+                        color: isDark ? AppColors.white12 : AppColors.black12,
+                      ),
+                      _drawerItem(
+                        context,
+                        icon: Icons.logout_rounded,
+                        label: 'ログアウト',
+                        isDestructive: true,
+                        onTap: () {
+                          Provider.of<AuthProvider>(context, listen: false).logout();
+                          Navigator.of(context).pushReplacementNamed('/login');
+                        },
+                      ),
+                      Divider(
+                        height: 1,
+                        color: isDark ? AppColors.white12 : AppColors.black12,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
             
@@ -311,67 +339,23 @@ class ProfileDrawer extends StatelessWidget {
     required String label,
     required VoidCallback onTap,
     bool isDestructive = false,
+    Color? iconColor,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Material(
-      color: AppColors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurface : AppColors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isDark ? AppColors.white12 : AppColors.black12,
-            ),
-          ),
-          child: SizedBox(
-            height: 36,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: isDestructive
-                        ? AppColors.error.withOpacity(0.12)
-                        : AppColors.orange500.withOpacity(0.18),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 16,
-                    color: isDestructive ? AppColors.error : AppColors.orange600,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      height: 1.2,
-                      color: isDestructive
-                          ? AppColors.error
-                          : (isDark ? AppColors.white : AppColors.lightText),
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 16,
-                  color: isDark ? AppColors.white60 : AppColors.black60,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+
+    return ListCard(
+      title: label,
+      onTap: onTap,
+      icon: icon,
+      iconBackgroundColor:
+          isDestructive ? AppColors.error.withOpacity(0.12) : null,
+      iconColor: isDestructive
+          ? AppColors.error
+          : iconColor,
+      titleColor: isDestructive
+          ? AppColors.error
+          : (isDark ? AppColors.white : AppColors.lightText),
+      chevronColor: isDark ? AppColors.white60 : AppColors.black60,
     );
   }
 

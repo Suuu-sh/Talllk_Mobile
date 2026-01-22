@@ -7,6 +7,7 @@ import 'topic_detail_screen.dart';
 import 'shuffle_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/app_bottom_nav.dart';
+import '../widgets/list_card.dart';
 import '../theme/app_colors.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -336,7 +337,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '最近閲覧したページ',
+          'さっき見たページ',
           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
         ),
         const SizedBox(height: 10),
@@ -633,60 +634,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ],
               ),
-                child: Material(
-                  color: AppColors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      _recordRecentSituation(situation['id']);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SituationDetailScreen(situationId: situation['id']),
-                        ),
-                      ).then((_) => _loadSituations());
-                    },
-                    borderRadius: BorderRadius.circular(16),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                      child: SizedBox(
-                        height: 36,
-                        child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 28,
-                            height: 28,
-                            decoration: BoxDecoration(
-                              color: AppColors.orange500.withOpacity(0.18),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Icon(
-                              Icons.folder_outlined,
-                              color: AppColors.orange600,
-                              size: 15,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              situation['title'],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 14,
-                                height: 1.2,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.chevron_right),
-                          ],
-                        ),
+                child: ListCard(
+                  title: situation['title'],
+                  onTap: () {
+                    _recordRecentSituation(situation['id']);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SituationDetailScreen(situationId: situation['id']),
                       ),
-                    ),
-                  ),
+                    ).then((_) => _loadSituations());
+                  },
                 ),
               ),
               if (!isLast)
@@ -845,7 +804,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             child: Text(
                                               'Talllk',
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: 20,
                                                 fontWeight: FontWeight.w800,
                                                 color: AppColors.orange600,
                                                 letterSpacing: 0.5,
@@ -885,7 +844,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                        'Talllkシチュエーション',
+                        'シチュエーション',
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
                               ),
                               Text(
