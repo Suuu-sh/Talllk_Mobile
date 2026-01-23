@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'dashboard_screen.dart';
+import 'discover_screen.dart';
 import 'search_screen.dart';
 
 class ShuffleScreen extends StatefulWidget {
@@ -154,6 +155,13 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
         context,
         MaterialPageRoute(builder: (context) => const DashboardScreen()),
         (route) => false,
+      );
+      return;
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DiscoverScreen()),
       );
       return;
     }

@@ -8,6 +8,7 @@ class ListCard extends StatelessWidget {
     required this.onTap,
     this.icon = Icons.folder_outlined,
     this.showChevron = true,
+    this.trailing,
     this.iconBackgroundColor,
     this.iconColor,
     this.titleColor,
@@ -18,6 +19,7 @@ class ListCard extends StatelessWidget {
   final VoidCallback onTap;
   final IconData icon;
   final bool showChevron;
+  final Widget? trailing;
   final Color? iconBackgroundColor;
   final Color? iconColor;
   final Color? titleColor;
@@ -68,7 +70,10 @@ class ListCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (showChevron) ...[
+                if (trailing != null) ...[
+                  const SizedBox(width: 8),
+                  trailing!,
+                ] else if (showChevron) ...[
                   const SizedBox(width: 8),
                   Icon(
                     Icons.chevron_right,

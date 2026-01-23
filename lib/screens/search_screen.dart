@@ -7,6 +7,7 @@ import 'dashboard_screen.dart';
 import 'situation_detail_screen.dart';
 import 'topic_detail_screen.dart';
 import 'shuffle_screen.dart';
+import 'discover_screen.dart';
 import '../theme/app_colors.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -149,6 +150,16 @@ class _SearchScreenState extends State<SearchScreen> {
       );
       return;
     }
+    if (index == 2) {
+      return;
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DiscoverScreen()),
+      );
+      return;
+    }
 
     Navigator.pushAndRemoveUntil(
       context,
@@ -175,15 +186,17 @@ class _SearchScreenState extends State<SearchScreen> {
               decoration: InputDecoration(
                 hintText: 'ファイル・フォルダを検索',
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon: _query.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () {
-                          _controller.clear();
-                          _onQueryChanged('');
-                        },
-                      ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    if (_query.isNotEmpty) {
+                      _controller.clear();
+                      _onQueryChanged('');
+                      return;
+                    }
+                    Navigator.pop(context);
+                  },
+                ),
               ),
               onChanged: _onQueryChanged,
             ),
@@ -289,7 +302,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ),
       bottomNavigationBar: AppBottomNav(
-        selectedIndex: 0,
+        selectedIndex: 2,
         onTap: _handleBottomNavTap,
       ),
     );

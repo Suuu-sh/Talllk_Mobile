@@ -89,6 +89,60 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to load situation'));
   }
 
+  Future<List<dynamic>> getPublicSituations() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/discover/situations'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to load public situations'));
+  }
+
+  Future<Map<String, dynamic>> getPublicSituation(int id) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/discover/situations/$id'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to load public situation'));
+  }
+
+  Future<void> savePublicSituation(int id) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/discover/situations/$id/save'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode != 201) {
+      throw Exception(_formatError(response, 'Failed to save situation'));
+    }
+  }
+
+  Future<void> savePublicTopic(int topicId, int targetSituationId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/discover/topics/$topicId/save'),
+      headers: await _getHeaders(),
+      body: jsonEncode({'target_situation_id': targetSituationId}),
+    );
+    if (response.statusCode != 201) {
+      throw Exception(_formatError(response, 'Failed to save topic'));
+    }
+  }
+
+  Future<void> savePublicQuestion(int questionId, int targetTopicId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/discover/questions/$questionId/save'),
+      headers: await _getHeaders(),
+      body: jsonEncode({'target_topic_id': targetTopicId}),
+    );
+    if (response.statusCode != 201) {
+      throw Exception(_formatError(response, 'Failed to save question'));
+    }
+  }
+
   Future<Map<String, dynamic>> createSituation(String title, String description) async {
     final response = await http.post(
       Uri.parse('$baseUrl/situations'),
@@ -125,6 +179,18 @@ class ApiService {
       return jsonDecode(response.body);
     }
     throw Exception(_formatError(response, 'Failed to update situation'));
+  }
+
+  Future<Map<String, dynamic>> publishSituation(int id, bool isPublic) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/situations/$id/publish'),
+      headers: await _getHeaders(),
+      body: jsonEncode({'is_public': isPublic}),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to publish situation'));
   }
 
   // Topics

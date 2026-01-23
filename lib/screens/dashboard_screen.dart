@@ -6,6 +6,7 @@ import 'situation_detail_screen.dart';
 import 'topic_detail_screen.dart';
 import 'shuffle_screen.dart';
 import 'profile_screen.dart';
+import 'discover_screen.dart';
 import '../widgets/app_bottom_nav.dart';
 import '../widgets/list_card.dart';
 import '../theme/app_colors.dart';
@@ -43,9 +44,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _selectedTabIndex = widget.initialTabIndex;
     _loadRecentSituations();
     _loadSituations();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted || widget.initialActionIndex == null) return;
-      _handleInitialAction(widget.initialActionIndex!);
+      await _handleInitialAction(widget.initialActionIndex!);
     });
   }
 
@@ -55,12 +56,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.dispose();
   }
 
-  void _handleInitialAction(int index) {
+  Future<void> _handleInitialAction(int index) async {
     if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ShuffleScreen()),
       );
+      return;
+    }
+    if (index == 2) {
+      await _toggleSearchInline();
+      return;
+    }
+    if (index == 3) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DiscoverScreen()),
+      );
+      if (!mounted) return;
+      setState(() {
+        _selectedTabIndex = 0;
+      });
     }
   }
 
@@ -88,7 +104,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _recordRecentSituation(int situationId) async {
-    final next = [situationId, ..._recentSituationIds.where((id) => id != situationId)];
+    final next = [
+      situationId,
+      ..._recentSituationIds.where((id) => id != situationId)
+    ];
     final trimmed = next.take(3).toList();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
@@ -102,7 +121,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _pruneRecentSituations() {
     if (_situations.isEmpty || _recentSituationIds.isEmpty) return;
-    final validIds = _situations.map((situation) => situation['id'] as int).toSet();
+    final validIds =
+        _situations.map((situation) => situation['id'] as int).toSet();
     final filtered = _recentSituationIds.where(validIds.contains).toList();
     if (filtered.length == _recentSituationIds.length) return;
     _recentSituationIds = filtered;
@@ -123,7 +143,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _showEditSituationDialog(Map<String, dynamic> situation) {
     final titleController = TextEditingController(text: situation['title']);
-    final descController = TextEditingController(text: situation['description'] ?? '');
+    final descController =
+        TextEditingController(text: situation['description'] ?? '');
 
     showDialog(
       context: context,
@@ -167,7 +188,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context, true),
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.error),
                       child: const Text('削除'),
                     ),
                   ],
@@ -212,7 +234,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final topicList = List<dynamic>.from(detail['topics'] ?? []);
       final questionList = List<dynamic>.from(detail['questions'] ?? []);
       final topicTitleById = <int, String>{
-        for (final topic in topicList) topic['id'] as int: topic['title'] as String,
+        for (final topic in topicList)
+          topic['id'] as int: topic['title'] as String,
       };
 
       for (final topic in topicList) {
@@ -298,12 +321,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _isSearchInline = false;
         _searchQuery = '';
         _searchController.clear();
+        _selectedTabIndex = 0;
       });
       return;
     }
 
     setState(() {
       _isSearchInline = true;
+      _selectedTabIndex = 2;
       _isSearchIndexLoading = true;
     });
     await _buildSearchIndex();
@@ -315,7 +340,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   List<dynamic> _recentSituations() {
     if (_situations.isEmpty || _recentSituationIds.isEmpty) return [];
-    final byId = {for (final situation in _situations) situation['id'] as int: situation};
+    final byId = {
+      for (final situation in _situations) situation['id'] as int: situation
+    };
     final ordered = <dynamic>[];
     for (final id in _recentSituationIds) {
       final situation = byId[id];
@@ -354,7 +381,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SituationDetailScreen(situationId: situation['id']),
+                      builder: (context) =>
+                          SituationDetailScreen(situationId: situation['id']),
                     ),
                   ).then((_) => _loadSituations());
                   _recordRecentSituation(situation['id']);
@@ -381,13 +409,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.description_outlined, color: AppColors.orange500, size: 18),
+                      Icon(Icons.description_outlined,
+                          color: AppColors.orange500, size: 18),
                       const Spacer(),
                       Text(
                         situation['title'],
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w300),
                       ),
                     ],
                   ),
@@ -403,15 +433,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildSearchInlineSection() {
     final lowerQuery = _searchQuery.toLowerCase();
     final situationMatches = _situations
-        .where((situation) =>
-            (situation['title'] ?? '').toString().toLowerCase().contains(lowerQuery))
+        .where((situation) => (situation['title'] ?? '')
+            .toString()
+            .toLowerCase()
+            .contains(lowerQuery))
         .toList();
     final topicMatches = _searchTopics
-        .where((topic) => (topic['title'] ?? '').toString().toLowerCase().contains(lowerQuery))
+        .where((topic) => (topic['title'] ?? '')
+            .toString()
+            .toLowerCase()
+            .contains(lowerQuery))
         .toList();
     final questionMatches = _searchQuestions
-        .where((question) =>
-            (question['question'] ?? '').toString().toLowerCase().contains(lowerQuery))
+        .where((question) => (question['question'] ?? '')
+            .toString()
+            .toLowerCase()
+            .contains(lowerQuery))
         .toList();
 
     return Column(
@@ -439,7 +476,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SituationDetailScreen(situationId: situation['id']),
+                      builder: (context) =>
+                          SituationDetailScreen(situationId: situation['id']),
                     ),
                   ).then((_) => _loadSituations());
                 },
@@ -553,87 +591,87 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       child: Column(
         children: List.generate(_situations.length, (index) {
-        final situation = _situations[index];
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        final isLast = index == _situations.length - 1;
-        return Column(
-          children: [
-            Slidable(
-              key: ValueKey(situation['id']),
-              endActionPane: ActionPane(
-                motion: const StretchMotion(),
-                extentRatio: 0.25,
-                children: [
-                  CustomSlidableAction(
-                    onPressed: (_) {
-                      _showEditSituationDialog(situation);
-                    },
-                    backgroundColor: AppColors.transparent,
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: isDark
-                              ? [AppColors.orange500, AppColors.orange600]
-                              : [AppColors.orange500, AppColors.orange600],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.orange600.withOpacity(0.25),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
+          final situation = _situations[index];
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final isLast = index == _situations.length - 1;
+          return Column(
+            children: [
+              Slidable(
+                key: ValueKey(situation['id']),
+                endActionPane: ActionPane(
+                  motion: const StretchMotion(),
+                  extentRatio: 0.25,
+                  children: [
+                    CustomSlidableAction(
+                      onPressed: (_) {
+                        _showEditSituationDialog(situation);
+                      },
+                      backgroundColor: AppColors.transparent,
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: isDark
+                                ? [AppColors.orange500, AppColors.orange600]
+                                : [AppColors.orange500, AppColors.orange600],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.edit_rounded,
-                          color: AppColors.white,
-                          size: 18,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.orange600.withOpacity(0.25),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.edit_rounded,
+                            color: AppColors.white,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  CustomSlidableAction(
-                    onPressed: (_) {
-                      // TODO: toggle favorite
-                    },
-                    backgroundColor: AppColors.transparent,
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: isDark
-                              ? [AppColors.orange500, AppColors.orange600]
-                              : [AppColors.orange500, AppColors.orange600],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.orange600.withOpacity(0.25),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
+                    CustomSlidableAction(
+                      onPressed: (_) {
+                        // TODO: toggle favorite
+                      },
+                      backgroundColor: AppColors.transparent,
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: isDark
+                                ? [AppColors.orange500, AppColors.orange600]
+                                : [AppColors.orange500, AppColors.orange600],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.star_rounded,
-                          color: AppColors.white,
-                          size: 18,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.orange600.withOpacity(0.25),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.star_rounded,
+                            color: AppColors.white,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
                 child: ListCard(
                   title: situation['title'],
                   onTap: () {
@@ -667,6 +705,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _selectedTabIndex = index;
     });
+    if (index != 2 && _isSearchInline) {
+      setState(() {
+        _isSearchInline = false;
+        _searchQuery = '';
+        _searchController.clear();
+      });
+    }
     if (index == 1) {
       await Navigator.push(
         context,
@@ -677,6 +722,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _selectedTabIndex = 0;
       });
       return;
+    }
+    if (index == 2) {
+      await _toggleSearchInline();
+      return;
+    }
+    if (index == 3) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DiscoverScreen()),
+      );
+      if (!mounted) return;
+      setState(() {
+        _selectedTabIndex = 0;
+      });
     }
   }
 
@@ -696,146 +755,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onRefresh: _loadSituations,
               child: Stack(
                 children: [
-                  AnimatedSlide(
-                    duration: const Duration(milliseconds: 260),
-                    curve: Curves.easeOut,
-                    offset: _isSearchInline ? const Offset(-1, 0) : Offset.zero,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: _isSearchInline ? 0 : 1,
-                      child: SafeArea(
-                        bottom: false,
-                        child: ListView(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                          children: [
-                          Builder(
-                            builder: (context) => AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 260),
-                              switchInCurve: Curves.easeOut,
-                              switchOutCurve: Curves.easeIn,
-                              transitionBuilder: (child, animation) {
-                                final offsetAnimation = Tween<Offset>(
-                                  begin: Offset(_isSearchInline ? 1 : -1, 0),
-                                  end: Offset.zero,
-                                ).animate(animation);
-                                return SlideTransition(
-                                  position: offsetAnimation,
-                                  child: FadeTransition(
-                                    opacity: animation,
-                                    child: child,
+                  if (!_isSearchInline)
+                    SafeArea(
+                      bottom: false,
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: InkWell(
+                                    onTap: () =>
+                                        Scaffold.of(context).openDrawer(),
+                                    borderRadius: BorderRadius.circular(18),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkSurface
+                                            : AppColors.white,
+                                        border: Border.all(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.white12
+                                              : AppColors.black12,
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: const Icon(Icons.person_outline,
+                                          size: 16),
+                                    ),
                                   ),
-                                );
-                              },
-                              child: _isSearchInline
-                                  ? Padding(
-                                      key: const ValueKey('search-header'),
-                                      padding: const EdgeInsets.only(bottom: 16),
-                              child: SizedBox(
-                                height: 36,
-                                child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextField(
-                                              controller: _searchController,
-                                              autofocus: true,
-                                              decoration: InputDecoration(
-                                                hintText: 'ファイル・フォルダを検索',
-                                                prefixIcon: const Icon(Icons.search, size: 18),
-                                                suffixIcon: IconButton(
-                                                  icon: const Icon(Icons.close, size: 18),
-                                                  onPressed: _toggleSearchInline,
-                                                ),
-                                                isDense: true,
-                                                contentPadding: const EdgeInsets.symmetric(
-                                                  horizontal: 12,
-                                                  vertical: 10,
-                                                ),
-                                              ),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  _searchQuery = value;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                ],
-                              ),
-                            ),
-                                    )
-                                  : Padding(
-                                      key: const ValueKey('title-header'),
-                                      padding: const EdgeInsets.only(bottom: 16),
-                                      child: Row(
-                                        children: [
-                                          InkWell(
-                                            onTap: () => Scaffold.of(context).openDrawer(),
-                                            borderRadius: BorderRadius.circular(18),
-                                            child: Container(
-                                              width: 30,
-                                              height: 30,
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context).brightness == Brightness.dark
-                                                    ? AppColors.darkSurface
-                                                    : AppColors.white,
-                                                border: Border.all(
-                                                  color:
-                                                      Theme.of(context).brightness == Brightness.dark
-                                                          ? AppColors.white12
-                                                          : AppColors.black12,
-                                                ),
-                                                borderRadius: BorderRadius.circular(14),
-                                              ),
-                                              child: const Icon(Icons.person_outline, size: 16),
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: AppColors.orange600,
-                                                width: 1.5,
-                                              ),
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                            child: Text(
-                                              'Talllk',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w800,
-                                                color: AppColors.orange600,
-                                                letterSpacing: 0.5,
-                                              ),
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          InkWell(
-                                            onTap: _toggleSearchInline,
-                                            borderRadius: BorderRadius.circular(18),
-                                            child: Container(
-                                              width: 28,
-                                              height: 28,
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context).brightness == Brightness.dark
-                                                    ? AppColors.darkSurface
-                                                    : AppColors.white,
-                                                border: Border.all(
-                                                  color:
-                                                      Theme.of(context).brightness == Brightness.dark
-                                                          ? AppColors.white12
-                                                          : AppColors.black12,
-                                                ),
-                                                borderRadius: BorderRadius.circular(14),
-                                              ),
-                                              child: const Icon(Icons.search, size: 15),
-                                            ),
-                                          ),
-                                        ],
+                                ),
+                                Expanded(
+                                  child: Center(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: AppColors.orange600,
+                                          width: 1.5,
+                                        ),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        'Talllk',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w800,
+                                          color: AppColors.orange600,
+                                          letterSpacing: 0.5,
+                                        ),
                                       ),
                                     ),
+                                  ),
+                                ),
+                                const SizedBox(width: 30, height: 30),
+                              ],
                             ),
                           ),
                           _buildRecentSection(),
@@ -844,74 +827,65 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                        'シチュエーション',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                                'シチュエーション',
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.w300),
                               ),
                               Text(
                                 '${_situations.length}件',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.white60
-                              : AppColors.black60,
-                        ),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.white60
+                                      : AppColors.black60,
+                                ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 8),
                           _buildFolderList(),
-                          ],
-                        ),
+                        ],
                       ),
                     ),
-                  ),
                   if (_isSearchInline)
-                    AnimatedSlide(
-                      duration: const Duration(milliseconds: 260),
-                      curve: Curves.easeOut,
-                      offset: _isSearchInline ? Offset.zero : const Offset(1, 0),
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        opacity: _isSearchInline ? 1 : 0,
-                        child: SafeArea(
-                          bottom: false,
-                          child: ListView(
-                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                            children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Row(
-                              children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _searchController,
-                                  autofocus: true,
-                                  decoration: InputDecoration(
-                                    hintText: 'ファイル・フォルダを検索',
-                                    prefixIcon: const Icon(Icons.search, size: 18),
-                                    suffixIcon: IconButton(
-                                      icon: const Icon(Icons.close, size: 18),
-                                      onPressed: _toggleSearchInline,
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 10,
-                                    ),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _searchQuery = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
+                    SafeArea(
+                      bottom: false,
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+                        children: [
+                          _buildSearchInlineSection(),
+                        ],
+                      ),
+                    ),
+                  if (_isSearchInline)
+                    Positioned(
+                      left: 16,
+                      right: 16,
+                      bottom: 12,
+                      child: SafeArea(
+                        top: false,
+                        child: TextField(
+                          controller: _searchController,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            hintText: 'ファイル・フォルダを検索',
+                            prefixIcon: const Icon(Icons.search, size: 18),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.close, size: 18),
+                              onPressed: _toggleSearchInline,
+                            ),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
                           ),
-                        ),
-                            _buildSearchInlineSection(),
-                          ],
-                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value;
+                            });
+                          },
                         ),
                       ),
                     ),
@@ -922,10 +896,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         selectedIndex: _selectedTabIndex,
         onTap: _handleTabTap,
       ),
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: _showCreateDialog,
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _isSearchInline
+          ? null
+          : FloatingActionButton.small(
+              onPressed: _showCreateDialog,
+              child: const Icon(Icons.add),
+            ),
     );
   }
 }

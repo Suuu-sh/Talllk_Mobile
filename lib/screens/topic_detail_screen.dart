@@ -4,6 +4,7 @@ import 'dashboard_screen.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'search_screen.dart';
 import 'shuffle_screen.dart';
+import 'discover_screen.dart';
 import '../widgets/list_card.dart';
 import '../theme/app_colors.dart';
 
@@ -253,6 +254,26 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
         context,
         MaterialPageRoute(builder: (context) => const DashboardScreen()),
         (route) => false,
+      );
+      return;
+    }
+    if (index == 2) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(
+            initialTabIndex: 2,
+            initialActionIndex: 2,
+          ),
+        ),
+        (route) => false,
+      );
+      return;
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DiscoverScreen()),
       );
       return;
     }

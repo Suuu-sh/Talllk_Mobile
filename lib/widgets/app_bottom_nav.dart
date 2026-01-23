@@ -19,7 +19,7 @@ class AppBottomNav extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            const itemCount = 2;
+            const itemCount = 4;
             return Container(
               height: 58,
               decoration: BoxDecoration(
@@ -47,12 +47,18 @@ class AppBottomNav extends StatelessWidget {
                           ? AppColors.orange600
                           : (isDark ? AppColors.white60 : AppColors.black60);
                       return Expanded(
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () => onTap(index),
                           child: Center(
                             child: Icon(
-                              index == 0 ? Icons.home_outlined : Icons.shuffle,
+                              index == 0
+                                  ? Icons.home_outlined
+                                  : (index == 1
+                                      ? Icons.shuffle
+                                      : (index == 2
+                                          ? Icons.search
+                                          : Icons.explore_outlined)),
                               size: 24,
                               color: iconColor,
                             ),

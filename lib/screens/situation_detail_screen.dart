@@ -6,6 +6,7 @@ import 'dashboard_screen.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'search_screen.dart';
 import 'shuffle_screen.dart';
+import 'discover_screen.dart';
 import '../widgets/list_card.dart';
 import '../theme/app_colors.dart';
 
@@ -24,6 +25,7 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
   List<dynamic> _topics = [];
   List<dynamic> _questions = [];
   bool _isLoading = true;
+  bool _isPublic = false;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
             .where((topic) => topic['parent_id'] == null)
             .toList();
         _questions = List<dynamic>.from(situation['questions'] ?? []);
+        _isPublic = situation['is_public'] == true;
         _isLoading = false;
       });
     } catch (e) {
@@ -47,6 +50,67 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _togglePublish(bool value) async {
+    final previous = _isPublic;
+    setState(() {
+      _isPublic = value;
+    });
+
+    try {
+      final updated = await _apiService.publishSituation(widget.situationId, value);
+      if (!mounted) return;
+      setState(() {
+        _situation = updated;
+        _isPublic = updated['is_public'] == true;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isPublic = previous;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('公開設定の更新に失敗しました')),
+      );
+    }
+  }
+
+  Widget _buildVisibilityToggle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tileColor = isDark ? AppColors.darkSurface : AppColors.white;
+    final borderColor = isDark ? AppColors.white12 : AppColors.black12;
+    final textColor = isDark ? AppColors.white : AppColors.black;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: tileColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor),
+      ),
+      child: SwitchListTile(
+        value: _isPublic,
+        onChanged: _togglePublish,
+        activeColor: AppColors.orange600,
+        title: Text(
+          '公開',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            color: textColor,
+          ),
+        ),
+        subtitle: Text(
+          _isPublic ? '他の人が見つけるタブで保存できます' : '自分だけが閲覧できます',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w300,
+            color: isDark ? AppColors.white60 : AppColors.black60,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      ),
+    );
   }
 
   int _countQuestions(int topicId) {
@@ -111,6 +175,26 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
         context,
         MaterialPageRoute(builder: (context) => const DashboardScreen()),
         (route) => false,
+      );
+      return;
+    }
+    if (index == 2) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(
+            initialTabIndex: 2,
+            initialActionIndex: 2,
+          ),
+        ),
+        (route) => false,
+      );
+      return;
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DiscoverScreen()),
       );
       return;
     }
@@ -356,6 +440,10 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                   child: _topics.isEmpty
                       ? ListView(
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                              child: _buildVisibilityToggle(context),
+                            ),
                             const SizedBox(height: 80),
                             Center(
                               child: Column(
@@ -386,6 +474,8 @@ class _SituationDetailScreenState extends State<SituationDetailScreen> {
                       : ListView(
                           padding: const EdgeInsets.all(16),
                           children: [
+                            _buildVisibilityToggle(context),
+                            const SizedBox(height: 16),
                             const Text(
                               'トピック',
                               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
