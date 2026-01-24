@@ -28,6 +28,8 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final _apiService = ApiService();
   List<dynamic> _situations = [];
+  List<dynamic> _favoriteSituations = [];
+  Set<int> _favoriteSituationIds = {};
   bool _isLoading = true;
   int _selectedTabIndex = 0;
   List<Map<String, dynamic>> _searchTopics = [];
@@ -93,6 +95,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final situations = await _apiService.getSituations();
       setState(() {
         _situations = situations;
+      });
+      try {
+        final favorites = await _apiService.getFavoriteSituations();
+        if (!mounted) return;
+        setState(() {
+          _favoriteSituations = favorites;
+          _favoriteSituationIds =
+              favorites.map((item) => item['id'] as int).toSet();
+        });
+      } catch (_) {}
+      if (!mounted) return;
+      setState(() {
         _isLoading = false;
       });
       _pruneRecentSituations();
@@ -126,6 +140,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final filtered = _recentSituationIds.where(validIds.contains).toList();
     if (filtered.length == _recentSituationIds.length) return;
     _recentSituationIds = filtered;
+  }
+
+  Future<void> _toggleFavorite(int situationId) async {
+    final isFavorite = _favoriteSituationIds.contains(situationId);
+    Map<String, dynamic>? match;
+    for (final item in _situations) {
+      if (item['id'] == situationId) {
+        match = Map<String, dynamic>.from(item as Map);
+        break;
+      }
+    }
+    setState(() {
+      if (isFavorite) {
+        _favoriteSituationIds.remove(situationId);
+        _favoriteSituations =
+            _favoriteSituations.where((item) => item['id'] != situationId).toList();
+      } else {
+        _favoriteSituationIds.add(situationId);
+        if (match != null) {
+          _favoriteSituations = [match, ..._favoriteSituations];
+        }
+      }
+    });
+
+    try {
+      if (isFavorite) {
+        await _apiService.removeFavoriteSituation(situationId);
+      } else {
+        await _apiService.addFavoriteSituation(situationId);
+      }
+    } catch (e) {
+      setState(() {
+        if (isFavorite) {
+          _favoriteSituationIds.add(situationId);
+          if (match != null) {
+            _favoriteSituations = [match, ..._favoriteSituations];
+          }
+        } else {
+          _favoriteSituationIds.remove(situationId);
+          _favoriteSituations = _favoriteSituations
+              .where((item) => item['id'] != situationId)
+              .toList();
+        }
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('お気に入りの更新に失敗しました')),
+      );
+    }
   }
 
   Future<void> _removeRecentSituation(int situationId) async {
@@ -568,6 +631,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       );
     }
 
+    final orderedSituations = [
+      ..._situations.where(
+        (item) => _favoriteSituationIds.contains(item['id'] as int),
+      ),
+      ..._situations.where(
+        (item) => !_favoriteSituationIds.contains(item['id'] as int),
+      ),
+    ];
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
@@ -590,10 +662,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
       ),
       child: Column(
-        children: List.generate(_situations.length, (index) {
-          final situation = _situations[index];
+        children: List.generate(orderedSituations.length, (index) {
+          final situation = orderedSituations[index];
           final isDark = Theme.of(context).brightness == Brightness.dark;
-          final isLast = index == _situations.length - 1;
+          final isLast = index == orderedSituations.length - 1;
           return Column(
             children: [
               Slidable(
@@ -613,15 +685,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: isDark
-                                ? [AppColors.orange500, AppColors.orange600]
-                                : [AppColors.orange500, AppColors.orange600],
+                                ? [AppColors.yellow500, AppColors.yellow600]
+                                : [AppColors.yellow500, AppColors.yellow600],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.orange600.withOpacity(0.25),
+                              color: AppColors.yellow600.withOpacity(0.25),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
@@ -637,9 +709,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     CustomSlidableAction(
-                      onPressed: (_) {
-                        // TODO: toggle favorite
-                      },
+                      onPressed: (_) => _toggleFavorite(situation['id']),
                       backgroundColor: AppColors.transparent,
                       padding: const EdgeInsets.symmetric(horizontal: 3),
                       child: Container(
@@ -674,6 +744,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 child: ListCard(
                   title: situation['title'],
+                  icon: _favoriteSituationIds.contains(situation['id'] as int)
+                      ? Icons.star_rounded
+                      : Icons.folder_outlined,
+                  iconColor: _favoriteSituationIds.contains(situation['id'] as int)
+                      ? AppColors.yellow600
+                      : AppColors.orange600,
+                  iconBackgroundColor: _favoriteSituationIds.contains(situation['id'] as int)
+                      ? AppColors.yellow500.withOpacity(0.18)
+                      : AppColors.orange500.withOpacity(0.18),
                   onTap: () {
                     _recordRecentSituation(situation['id']);
                     Navigator.push(
@@ -700,6 +779,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+
 
   Future<void> _handleTabTap(int index) async {
     setState(() {

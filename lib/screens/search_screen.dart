@@ -177,11 +177,14 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          children: [
-            TextField(
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            children: [
+              TextField(
               controller: _controller,
               decoration: InputDecoration(
                 hintText: 'ファイル・フォルダを検索',
@@ -298,7 +301,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: AppBottomNav(

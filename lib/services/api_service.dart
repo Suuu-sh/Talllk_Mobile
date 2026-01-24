@@ -78,6 +78,39 @@ class ApiService {
     throw Exception(_formatError(response, 'Failed to load situations'));
   }
 
+  Future<List<dynamic>> getFavoriteSituations() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/situations/favorites'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(_formatError(response, 'Failed to load favorite situations'));
+  }
+
+  Future<void> addFavoriteSituation(int situationId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/situations/$situationId/favorite'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return;
+    }
+    throw Exception(_formatError(response, 'Failed to add favorite'));
+  }
+
+  Future<void> removeFavoriteSituation(int situationId) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/situations/$situationId/favorite'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      return;
+    }
+    throw Exception(_formatError(response, 'Failed to remove favorite'));
+  }
+
   Future<Map<String, dynamic>> getSituation(int id) async {
     final response = await http.get(
       Uri.parse('$baseUrl/situations/$id'),
