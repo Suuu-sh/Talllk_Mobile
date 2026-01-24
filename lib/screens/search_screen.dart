@@ -58,7 +58,8 @@ class _SearchScreenState extends State<SearchScreen> {
         final topicList = List<dynamic>.from(detail['topics'] ?? []);
         final questionList = List<dynamic>.from(detail['questions'] ?? []);
         final topicTitleById = {
-          for (final topic in topicList) topic['id'] as int: topic['title'] as String,
+          for (final topic in topicList)
+            topic['id'] as int: topic['title'] as String,
         };
 
         for (final topic in topicList) {
@@ -119,15 +120,22 @@ class _SearchScreenState extends State<SearchScreen> {
 
     setState(() {
       _situationMatches = _situations
-          .where((situation) =>
-              (situation['title'] ?? '').toString().toLowerCase().contains(lowerQuery))
+          .where((situation) => (situation['title'] ?? '')
+              .toString()
+              .toLowerCase()
+              .contains(lowerQuery))
           .toList();
       _topicMatches = _searchTopics
-          .where((topic) => (topic['title'] ?? '').toString().toLowerCase().contains(lowerQuery))
+          .where((topic) => (topic['title'] ?? '')
+              .toString()
+              .toLowerCase()
+              .contains(lowerQuery))
           .toList();
       _questionMatches = _searchQuestions
-          .where((question) =>
-              (question['question'] ?? '').toString().toLowerCase().contains(lowerQuery))
+          .where((question) => (question['question'] ?? '')
+              .toString()
+              .toLowerCase()
+              .contains(lowerQuery))
           .toList();
       _isSearching = false;
     });
@@ -178,129 +186,139 @@ class _SearchScreenState extends State<SearchScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusScope.of(context).unfocus(),
+        // 検索画面を開いた直後（クエリ空）のときは、検索窓以外をタップで戻れるようにする。
+        // クエリが入っているときは、誤って結果タップを潰さないよう「戻る」はしない。
+        onTap: () {
+          final focus = FocusScope.of(context);
+          if (focus.hasFocus) focus.unfocus();
+          if (_query.isEmpty) {
+            Navigator.pop(context);
+          }
+        },
         child: SafeArea(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
             children: [
               TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: 'ファイル・フォルダを検索',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    if (_query.isNotEmpty) {
-                      _controller.clear();
-                      _onQueryChanged('');
-                      return;
-                    }
-                    Navigator.pop(context);
-                  },
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: 'ファイル・フォルダを検索',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      if (_query.isNotEmpty) {
+                        _controller.clear();
+                        _onQueryChanged('');
+                        return;
+                      }
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
+                onChanged: _onQueryChanged,
               ),
-              onChanged: _onQueryChanged,
-            ),
-            const SizedBox(height: 16),
-            if (_isIndexLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_query.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Text('検索ワードを入力してください'),
-              )
-            else ...[
-              if (_isSearching)
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 12),
-                  child: LinearProgressIndicator(minHeight: 2),
-                ),
-              if (_situationMatches.isNotEmpty || _topicMatches.isNotEmpty) ...[
-                const Text('フォルダ'),
-                const SizedBox(height: 8),
-                ..._situationMatches.map(
-                  (situation) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.folder_outlined),
-                    title: Text(situation['title']),
-                    subtitle: const Text('シチュエーション'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SituationDetailScreen(situationId: situation['id']),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                ..._topicMatches.map(
-                  (topic) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.folder_open),
-                    title: Text(topic['title']),
-                    subtitle: Text(topic['situationTitle'] ?? ''),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TopicDetailScreen(
-                            situationId: topic['situationId'],
-                            topicId: topic['id'],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
-              if (_questionMatches.isNotEmpty) ...[
-                const Text('ファイル'),
-                const SizedBox(height: 8),
-                ..._questionMatches.map(
-                  (question) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.description_outlined),
-                    title: Text(question['question']),
-                    subtitle: Text(question['topicTitle'] ?? ''),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TopicDetailScreen(
-                            situationId: question['situationId'],
-                            topicId: question['topicId'],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-              if (_situationMatches.isEmpty && _topicMatches.isEmpty && _questionMatches.isEmpty)
+              const SizedBox(height: 16),
+              if (_isIndexLoading)
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Text('該当する結果がありません'),
-                ),
-            ],
-            if (!_isIndexLoading && _query.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  '検索結果 ${_situationMatches.length + _topicMatches.length + _questionMatches.length} 件',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppColors.white60 : AppColors.black60,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_query.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Text('検索ワードを入力してください'),
+                )
+              else ...[
+                if (_isSearching)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: LinearProgressIndicator(minHeight: 2),
+                  ),
+                if (_situationMatches.isNotEmpty ||
+                    _topicMatches.isNotEmpty) ...[
+                  const Text('フォルダ'),
+                  const SizedBox(height: 8),
+                  ..._situationMatches.map(
+                    (situation) => ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.folder_outlined),
+                      title: Text(situation['title']),
+                      subtitle: const Text('シチュエーション'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SituationDetailScreen(
+                                situationId: situation['id']),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  ..._topicMatches.map(
+                    (topic) => ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.folder_open),
+                      title: Text(topic['title']),
+                      subtitle: Text(topic['situationTitle'] ?? ''),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TopicDetailScreen(
+                              situationId: topic['situationId'],
+                              topicId: topic['id'],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                if (_questionMatches.isNotEmpty) ...[
+                  const Text('ファイル'),
+                  const SizedBox(height: 8),
+                  ..._questionMatches.map(
+                    (question) => ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.description_outlined),
+                      title: Text(question['question']),
+                      subtitle: Text(question['topicTitle'] ?? ''),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TopicDetailScreen(
+                              situationId: question['situationId'],
+                              topicId: question['topicId'],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+                if (_situationMatches.isEmpty &&
+                    _topicMatches.isEmpty &&
+                    _questionMatches.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Text('該当する結果がありません'),
+                  ),
+              ],
+              if (!_isIndexLoading && _query.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '検索結果 ${_situationMatches.length + _topicMatches.length + _questionMatches.length} 件',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.white60 : AppColors.black60,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
