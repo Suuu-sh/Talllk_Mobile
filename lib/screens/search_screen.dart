@@ -181,29 +181,25 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  void _handleBackgroundTap() {
+    final focus = FocusScope.of(context);
+    if (focus.hasFocus) focus.unfocus();
+    if (_query.isEmpty) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      body: Stack(
-        children: [
-          // 背景: タップ検出用（ListViewの下に配置）
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              final focus = FocusScope.of(context);
-              if (focus.hasFocus) focus.unfocus();
-              if (_query.isEmpty) {
-                Navigator.pop(context);
-              }
-            },
-            child: Container(color: Colors.transparent),
-          ),
-          // 前面: 既存のListView
-          SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-              children: [
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: _handleBackgroundTap,
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            children: [
               TextField(
                 controller: _controller,
                 decoration: InputDecoration(
@@ -327,7 +323,6 @@ class _SearchScreenState extends State<SearchScreen> {
             ],
           ),
         ),
-        ],
       ),
       bottomNavigationBar: AppBottomNav(
         selectedIndex: 2,
