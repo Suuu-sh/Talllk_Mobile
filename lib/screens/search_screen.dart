@@ -185,21 +185,25 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        // 検索画面を開いた直後（クエリ空）のときは、検索窓以外をタップで戻れるようにする。
-        // クエリが入っているときは、誤って結果タップを潰さないよう「戻る」はしない。
-        onTap: () {
-          final focus = FocusScope.of(context);
-          if (focus.hasFocus) focus.unfocus();
-          if (_query.isEmpty) {
-            Navigator.pop(context);
-          }
-        },
-        child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-            children: [
+      body: Stack(
+        children: [
+          // 背景: タップ検出用（ListViewの下に配置）
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              final focus = FocusScope.of(context);
+              if (focus.hasFocus) focus.unfocus();
+              if (_query.isEmpty) {
+                Navigator.pop(context);
+              }
+            },
+            child: Container(color: Colors.transparent),
+          ),
+          // 前面: 既存のListView
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              children: [
               TextField(
                 controller: _controller,
                 decoration: InputDecoration(
@@ -323,6 +327,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ],
           ),
         ),
+        ],
       ),
       bottomNavigationBar: AppBottomNav(
         selectedIndex: 2,
