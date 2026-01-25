@@ -186,6 +186,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         // 検索画面を開いた直後（クエリ空）のときは、検索窓以外をタップで戻れるようにする。
         // クエリが入っているときは、誤って結果タップを潰さないよう「戻る」はしない。
         onTap: () {
