@@ -929,52 +929,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                   if (_isSearchInline)
-                    SafeArea(
-                      bottom: false,
-                      child: ListView(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        // 「検索カード/検索窓」以外の背景をタップしたら、×と同じ挙動でホームに戻す
+                        // （子要素側でタップが消費される場合はここは呼ばれない）
+                        _toggleSearchInline();
+                      },
+                      child: Stack(
                         children: [
-                          _buildSearchInlineSection(),
-                        ],
-                      ),
-                    ),
-                  if (_isSearchInline)
-                    Positioned(
-                      left: 16,
-                      right: 16,
-                      bottom: 12,
-                      child: SafeArea(
-                        top: false,
-                        child: TapRegion(
-                          onTapOutside: (_) {
-                            // 検索窓以外（背景）をタップしたら、検索窓内の×と同じ挙動にする
-                            if (_isSearchInline) {
-                              _toggleSearchInline();
-                            }
-                          },
-                          child: TextField(
-                            controller: _searchController,
-                            autofocus: true,
-                            decoration: InputDecoration(
-                              hintText: 'ファイル・フォルダを検索',
-                              prefixIcon: const Icon(Icons.search, size: 18),
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.close, size: 18),
-                                onPressed: _toggleSearchInline,
-                              ),
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 10,
+                          SafeArea(
+                            bottom: false,
+                            child: ListView(
+                              padding:
+                                  const EdgeInsets.fromLTRB(16, 16, 16, 80),
+                              children: [
+                                _buildSearchInlineSection(),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            left: 16,
+                            right: 16,
+                            bottom: 12,
+                            child: SafeArea(
+                              top: false,
+                              child: TextField(
+                                controller: _searchController,
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  hintText: 'ファイル・フォルダを検索',
+                                  prefixIcon:
+                                      const Icon(Icons.search, size: 18),
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.close, size: 18),
+                                    onPressed: _toggleSearchInline,
+                                  ),
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _searchQuery = value;
+                                  });
+                                },
                               ),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                _searchQuery = value;
-                              });
-                            },
                           ),
-                        ),
+                        ],
                       ),
                     ),
                 ],
