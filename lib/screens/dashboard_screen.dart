@@ -945,27 +945,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       bottom: 12,
                       child: SafeArea(
                         top: false,
-                        child: TextField(
-                          controller: _searchController,
-                          autofocus: true,
-                          decoration: InputDecoration(
-                            hintText: 'ファイル・フォルダを検索',
-                            prefixIcon: const Icon(Icons.search, size: 18),
-                            suffixIcon: IconButton(
-                              icon: const Icon(Icons.close, size: 18),
-                              onPressed: _toggleSearchInline,
-                            ),
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
-                            ),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value;
-                            });
+                        child: TapRegion(
+                          onTapOutside: (_) {
+                            // 検索窓以外（背景）をタップしたら、検索窓内の×と同じ挙動にする
+                            if (_isSearchInline) {
+                              _toggleSearchInline();
+                            }
                           },
+                          child: TextField(
+                            controller: _searchController,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              hintText: 'ファイル・フォルダを検索',
+                              prefixIcon: const Icon(Icons.search, size: 18),
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.close, size: 18),
+                                onPressed: _toggleSearchInline,
+                              ),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                              });
+                            },
+                          ),
                         ),
                       ),
                     ),
