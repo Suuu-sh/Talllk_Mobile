@@ -6,16 +6,19 @@ class ListCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.onTap,
+    this.subtitle,
     this.icon = Icons.folder_outlined,
     this.showChevron = true,
     this.trailing,
     this.iconBackgroundColor,
     this.iconColor,
     this.titleColor,
+    this.subtitleColor,
     this.chevronColor,
   });
 
   final String title;
+  final String? subtitle;
   final VoidCallback onTap;
   final IconData icon;
   final bool showChevron;
@@ -23,6 +26,7 @@ class ListCard extends StatelessWidget {
   final Color? iconBackgroundColor;
   final Color? iconColor;
   final Color? titleColor;
+  final Color? subtitleColor;
   final Color? chevronColor;
 
   @override
@@ -37,7 +41,7 @@ class ListCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           child: SizedBox(
-            height: 36,
+            height: subtitle == null ? 36 : 52,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -57,17 +61,38 @@ class ListCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      height: 1.2,
-                      color:
-                          titleColor ?? (isDark ? AppColors.white : AppColors.lightText),
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          height: 1.2,
+                          color: titleColor ??
+                              (isDark ? AppColors.white : AppColors.lightText),
+                        ),
+                      ),
+                      if (subtitle != null && subtitle!.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 12,
+                            height: 1.2,
+                            color: subtitleColor ??
+                                (isDark ? AppColors.white60 : AppColors.black60),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 if (trailing != null) ...[

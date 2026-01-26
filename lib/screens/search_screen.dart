@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../widgets/app_bottom_nav.dart';
+import '../widgets/list_card.dart';
 import 'dashboard_screen.dart';
 import 'situation_detail_screen.dart';
 import 'topic_detail_screen.dart';
@@ -250,28 +251,25 @@ class _SearchScreenState extends State<SearchScreen> {
                   const Text('フォルダ'),
                   const SizedBox(height: 8),
                   ..._situationMatches.map(
-                    (situation) => ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.folder_outlined),
-                      title: Text(situation['title']),
-                      subtitle: const Text('シチュエーション'),
+                    (situation) => ListCard(
+                      title: situation['title'],
+                      icon: Icons.folder_outlined,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => SituationDetailScreen(
-                                situationId: situation['id']),
+                              situationId: situation['id'],
+                            ),
                           ),
                         );
                       },
                     ),
                   ),
                   ..._topicMatches.map(
-                    (topic) => ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.folder_open),
-                      title: Text(topic['title']),
-                      subtitle: Text(topic['situationTitle'] ?? ''),
+                    (topic) => ListCard(
+                      title: topic['title'],
+                      icon: Icons.folder_open,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -291,11 +289,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   const Text('ファイル'),
                   const SizedBox(height: 8),
                   ..._questionMatches.map(
-                    (question) => ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.description_outlined),
-                      title: Text(question['question']),
-                      subtitle: Text(question['topicTitle'] ?? ''),
+                    (question) => ListCard(
+                      title: question['question'],
+                      icon: Icons.description_outlined,
                       onTap: () {
                         Navigator.push(
                           context,
