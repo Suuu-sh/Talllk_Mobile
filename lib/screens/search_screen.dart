@@ -193,6 +193,15 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text('検索'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: _handleBackgroundTap,
