@@ -529,29 +529,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const Text('フォルダ'),
             const SizedBox(height: 8),
             ...situationMatches.map(
-              (situation) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.folder_outlined),
-                title: Text(situation['title']),
-                subtitle: const Text('シチュエーション'),
+              (situation) => ListCard(
+                title: situation['title'],
+                icon: Icons.folder_outlined,
                 onTap: () {
                   _recordRecentSituation(situation['id']);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          SituationDetailScreen(situationId: situation['id']),
+                      builder: (context) => SituationDetailScreen(
+                        situationId: situation['id'],
+                      ),
                     ),
                   ).then((_) => _loadSituations());
                 },
               ),
             ),
             ...topicMatches.map(
-              (topic) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.folder_open),
-                title: Text(topic['title']),
-                subtitle: Text(topic['situationTitle'] ?? ''),
+              (topic) => ListCard(
+                title: topic['title'],
+                icon: Icons.folder_open,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -571,11 +568,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const Text('ファイル'),
             const SizedBox(height: 8),
             ...questionMatches.map(
-              (question) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.description_outlined),
-                title: Text(question['question']),
-                subtitle: Text(question['topicTitle'] ?? ''),
+              (question) => ListCard(
+                title: question['question'],
+                icon: Icons.description_outlined,
                 onTap: () {
                   Navigator.push(
                     context,
