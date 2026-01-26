@@ -929,12 +929,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                   if (_isSearchInline)
-                    TapRegion(
-                      onTapOutside: (_) {
-                        // 検索UI（検索結果リスト含む）の外＝背景をタップした時だけ閉じる
-                        if (_isSearchInline) {
-                          _toggleSearchInline();
-                        }
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        // 「検索カード/検索窓」以外の背景をタップしたら、×と同じ挙動でホームに戻す
+                        // （子要素側でタップが消費される場合はここは呼ばれない）
+                        _toggleSearchInline();
                       },
                       child: Stack(
                         children: [
