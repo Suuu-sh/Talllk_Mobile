@@ -38,36 +38,63 @@ class AppBottomNav extends StatelessWidget {
                         ),
                       ],
               ),
-              child: Stack(
-                children: [
-                  Row(
-                    children: List.generate(itemCount, (index) {
-                      final isActive = selectedIndex == index;
-                      final iconColor = isActive
-                          ? AppColors.orange600
-                          : (isDark ? AppColors.white60 : AppColors.black60);
-                      return Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () => onTap(index),
-                          child: Center(
-                            child: Icon(
-                              index == 0
-                                  ? Icons.home_outlined
-                                  : (index == 1
-                                      ? Icons.shuffle
-                                      : (index == 2
-                                          ? Icons.search
-                                          : Icons.explore_outlined)),
-                              size: 24,
-                              color: iconColor,
-                            ),
+              child: Row(
+                children: List.generate(itemCount, (index) {
+                  final isActive = selectedIndex == index;
+                  final iconColor = isActive
+                      ? AppColors.orange600
+                      : (isDark ? AppColors.white60 : AppColors.black60);
+                  final labels = ['ホーム', 'シャッフル', '検索', '見つける'];
+                  final icons = [
+                    Icons.home_outlined,
+                    Icons.shuffle,
+                    Icons.search,
+                    Icons.explore_outlined,
+                  ];
+                  return Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => onTap(index),
+                      child: Center(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isActive ? 12 : 0,
+                            vertical: isActive ? 6 : 0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? AppColors.orange600.withOpacity(isDark ? 0.15 : 0.1)
+                                : AppColors.transparent,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                icons[index],
+                                size: 22,
+                                color: iconColor,
+                              ),
+                              if (isActive) ...[
+                                const SizedBox(width: 6),
+                                Text(
+                                  labels[index],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.orange600,
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ),
-                      );
-                    }),
-                  ),
-                ],
+                      ),
+                    ),
+                  );
+                }),
               ),
             );
           },

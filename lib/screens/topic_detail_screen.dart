@@ -320,7 +320,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                   if (_childTopics.isNotEmpty) ...[
                                     const Text(
                                       'フォルダ',
-                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                                     ),
                                     const SizedBox(height: 8),
                                     Container(
@@ -386,7 +386,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                               const SizedBox(height: 16),
                               const Text(
                                 '質問',
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                               ),
                               const SizedBox(height: 8),
                               if (_topic!['questions']?.isEmpty ?? true)
@@ -457,7 +457,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 16,
-                                              vertical: 6,
+                                              vertical: 12,
                                             ),
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -466,8 +466,8 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                   crossAxisAlignment: CrossAxisAlignment.center,
                                                   children: [
                                                     Container(
-                                                      width: 28,
-                                                      height: 28,
+                                                      width: 32,
+                                                      height: 32,
                                                       decoration: BoxDecoration(
                                                         color: AppColors.orange500.withOpacity(0.18),
                                                         borderRadius: BorderRadius.circular(10),
@@ -475,19 +475,19 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                       child: Icon(
                                                         Icons.help_outline,
                                                         color: AppColors.orange600,
-                                                        size: 15,
+                                                        size: 17,
                                                       ),
                                                     ),
                                                     const SizedBox(width: 12),
                                                     Expanded(
                                                       child: Text(
                                                         question['question'],
-                                                        maxLines: 1,
+                                                        maxLines: 2,
                                                         overflow: TextOverflow.ellipsis,
                                                         style: const TextStyle(
                                                           fontWeight: FontWeight.w400,
                                                           fontSize: 14,
-                                                          height: 1.2,
+                                                          height: 1.3,
                                                         ),
                                                       ),
                                                     ),
@@ -526,33 +526,41 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
                                                     ),
                                                   ],
                                                 ),
-                                                if (isExpanded) ...[
-                                                  const SizedBox(height: 10),
-                                                  Container(
-                                                    width: double.infinity,
-                                                    padding: const EdgeInsets.all(12),
-                                                    decoration: BoxDecoration(
-                                                      color: isDark
-                                                          ? AppColors.darkAnswer
-                                                          : AppColors.lightAnswer,
-                                                      borderRadius: BorderRadius.circular(12),
-                                                      border: Border.all(
+                                                AnimatedCrossFade(
+                                                  firstChild: const SizedBox.shrink(),
+                                                  secondChild: Padding(
+                                                    padding: const EdgeInsets.only(top: 12),
+                                                    child: Container(
+                                                      width: double.infinity,
+                                                      padding: const EdgeInsets.all(14),
+                                                      decoration: BoxDecoration(
                                                         color: isDark
-                                                            ? AppColors.white12
-                                                            : AppColors.black12,
+                                                            ? AppColors.darkAnswer
+                                                            : AppColors.lightAnswer,
+                                                        borderRadius: BorderRadius.circular(12),
+                                                        border: Border.all(
+                                                          color: isDark
+                                                              ? AppColors.white12
+                                                              : AppColors.black12,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    child: Text(
-                                                      question['answer'] ?? '（未回答）',
-                                                      style: TextStyle(
-                                                        height: 1.5,
-                                                        color: isDark
-                                                            ? AppColors.white
-                                                            : AppColors.black,
+                                                      child: Text(
+                                                        question['answer'] ?? '（未回答）',
+                                                        style: TextStyle(
+                                                          height: 1.5,
+                                                          color: isDark
+                                                              ? AppColors.white
+                                                              : AppColors.black,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
-                                                ],
+                                                  crossFadeState: isExpanded
+                                                      ? CrossFadeState.showSecond
+                                                      : CrossFadeState.showFirst,
+                                                  duration: const Duration(milliseconds: 200),
+                                                  sizeCurve: Curves.easeInOut,
+                                                ),
                                               ],
                                             ),
                                           ),

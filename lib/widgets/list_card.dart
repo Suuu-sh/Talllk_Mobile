@@ -39,15 +39,15 @@ class ListCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: SizedBox(
-            height: subtitle == null ? 36 : 52,
+            height: subtitle == null ? 48 : 64,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: 28,
-                  height: 28,
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
                     color: iconBackgroundColor ??
                         AppColors.orange500.withOpacity(0.18),
@@ -56,7 +56,7 @@ class ListCard extends StatelessWidget {
                   child: Icon(
                     icon,
                     color: iconColor ?? AppColors.orange600,
-                    size: 15,
+                    size: 17,
                   ),
                 ),
                 const SizedBox(width: 12),

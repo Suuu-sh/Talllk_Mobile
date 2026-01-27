@@ -428,7 +428,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         const Text(
           'さっき見たページ',
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 10),
         SizedBox(

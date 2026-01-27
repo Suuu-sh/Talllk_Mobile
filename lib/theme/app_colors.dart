@@ -24,7 +24,7 @@ class AppColors {
   static const Color darkAnswer = Color(0xFF111111);
   static const Color darkAnswerAlt = Color(0xFF1B1B1B);
   static const Color darkBodyText = Color(0xFFF9FAFB);
-  static const Color darkMutedText = Color(0xFF9CA3AF);
+  static const Color darkMutedText = Color(0xFFB0B8C4);
 
   static const Color error = Color(0xFFEF4444);
   static const Color errorLight = Color(0xFFF87171);
