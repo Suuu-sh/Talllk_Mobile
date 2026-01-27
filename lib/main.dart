@@ -75,12 +75,12 @@ class TalllkApp extends StatelessWidget {
                 displayColor: AppColors.lightText,
               ),
             ).copyWith(
-              bodyLarge: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              bodyMedium: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              bodySmall: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              labelLarge: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              labelMedium: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              labelSmall: GoogleFonts.inter(fontWeight: FontWeight.w400),
+              bodyLarge: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              bodyMedium: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              bodySmall: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              labelLarge: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              labelMedium: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              labelSmall: GoogleFonts.inter(fontWeight: FontWeight.w300),
             ),
             appBarTheme: AppBarTheme(
               backgroundColor: AppColors.white,
@@ -89,7 +89,7 @@ class TalllkApp extends StatelessWidget {
               surfaceTintColor: AppColors.transparent,
               titleTextStyle: GoogleFonts.inter(
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w300,
                 color: AppColors.lightText,
               ),
             ),
@@ -110,7 +110,7 @@ class TalllkApp extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 textStyle: GoogleFonts.inter(
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w300,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -163,12 +163,12 @@ class TalllkApp extends StatelessWidget {
                 displayColor: AppColors.white,
               ),
             ).copyWith(
-              bodyLarge: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              bodyMedium: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              bodySmall: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              labelLarge: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              labelMedium: GoogleFonts.inter(fontWeight: FontWeight.w400),
-              labelSmall: GoogleFonts.inter(fontWeight: FontWeight.w400),
+              bodyLarge: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              bodyMedium: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              bodySmall: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              labelLarge: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              labelMedium: GoogleFonts.inter(fontWeight: FontWeight.w300),
+              labelSmall: GoogleFonts.inter(fontWeight: FontWeight.w300),
             ),
             appBarTheme: AppBarTheme(
               backgroundColor: darkScaffold,
@@ -177,7 +177,7 @@ class TalllkApp extends StatelessWidget {
               surfaceTintColor: AppColors.transparent,
               titleTextStyle: GoogleFonts.inter(
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w300,
                 color: AppColors.white,
               ),
             ),
@@ -198,7 +198,7 @@ class TalllkApp extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 textStyle: GoogleFonts.inter(
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w300,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
