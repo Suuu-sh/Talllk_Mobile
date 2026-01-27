@@ -185,9 +185,6 @@ class _SearchScreenState extends State<SearchScreen> {
   void _handleBackgroundTap() {
     final focus = FocusScope.of(context);
     if (focus.hasFocus) focus.unfocus();
-    if (_query.isEmpty) {
-      Navigator.pop(context);
-    }
   }
 
   @override

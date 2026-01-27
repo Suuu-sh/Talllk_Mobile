@@ -927,9 +927,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        // 「検索カード/検索窓」以外の背景をタップしたら、×と同じ挙動でホームに戻す
-                        // （子要素側でタップが消費される場合はここは呼ばれない）
-                        _toggleSearchInline();
+                        final focus = FocusScope.of(context);
+                        if (focus.hasFocus) focus.unfocus();
                       },
                       child: Stack(
                         children: [
@@ -958,7 +957,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       const Icon(Icons.search, size: 18),
                                   suffixIcon: IconButton(
                                     icon: const Icon(Icons.close, size: 18),
-                                    onPressed: _toggleSearchInline,
+                                    onPressed: () {
+                                      final focus = FocusScope.of(context);
+                                      if (focus.hasFocus) focus.unfocus();
+                                    },
                                   ),
                                   isDense: true,
                                   contentPadding: const EdgeInsets.symmetric(
