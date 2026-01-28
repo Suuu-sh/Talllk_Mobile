@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../theme/app_colors.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'dashboard_screen.dart';
 import 'discover_screen.dart';
@@ -233,47 +234,84 @@ class _ShuffleScreenState extends State<ShuffleScreen> {
                 ],
               )
             else
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _currentQuestion?['question'] ?? '',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
+              Builder(
+                builder: (context) {
+                  final isDark = Theme.of(context).brightness == Brightness.dark;
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkSurface : AppColors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isDark ? AppColors.white12 : AppColors.black12,
                       ),
-                      const SizedBox(height: 12),
-                      if (_showAnswer)
-                        Text(
-                          _currentQuestion?['answer'] ?? '（未回答）',
-                          style: const TextStyle(height: 1.5),
-                        )
-                      else
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _showAnswer = true;
-                            });
-                          },
-                          child: const Text('回答を見る'),
-                        ),
-                      const SizedBox(height: 8),
-                      TextButton.icon(
-                        onPressed: _showEditAnswerDialog,
-                        icon: const Icon(Icons.edit, size: 18),
-                        label: const Text('回答を編集'),
+                      boxShadow: isDark
+                          ? []
+                          : [
+                              BoxShadow(
+                                color: AppColors.black.withOpacity(0.06),
+                                blurRadius: 16,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _currentQuestion?['question'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          AnimatedCrossFade(
+                            firstChild: TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _showAnswer = true;
+                                });
+                              },
+                              child: const Text('回答を見る'),
+                            ),
+                            secondChild: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? AppColors.darkAnswer
+                                    : AppColors.lightAnswerAlt,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isDark
+                                      ? AppColors.white12
+                                      : AppColors.black12,
+                                ),
+                              ),
+                              child: Text(
+                                _currentQuestion?['answer'] ?? '（未回答）',
+                                style: const TextStyle(height: 1.5),
+                              ),
+                            ),
+                            crossFadeState: _showAnswer
+                                ? CrossFadeState.showSecond
+                                : CrossFadeState.showFirst,
+                            duration: const Duration(milliseconds: 200),
+                            sizeCurve: Curves.easeInOut,
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton.icon(
+                            onPressed: _showEditAnswerDialog,
+                            icon: const Icon(Icons.edit, size: 18),
+                            label: const Text('回答を編集'),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
             const SizedBox(height: 16),
             if (_selectedSituation != null && _questions.isNotEmpty)

@@ -122,7 +122,7 @@ class TalllkApp extends StatelessWidget {
                 foregroundColor: AppColors.orange600,
                 textStyle: GoogleFonts.inter(
                   fontSize: 14,
-                  fontWeight: FontWeight.w300,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
@@ -210,7 +210,7 @@ class TalllkApp extends StatelessWidget {
                 foregroundColor: AppColors.orange500,
                 textStyle: GoogleFonts.inter(
                   fontSize: 14,
-                  fontWeight: FontWeight.w300,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
